@@ -19,8 +19,6 @@ namespace Core.Player
             var position = turretTransform.position;
             turretTransform.up = new Vector2(aimWorldPosition.x - position.x,
                 aimWorldPosition.y - position.y);
-
-
         }
     }
 }
