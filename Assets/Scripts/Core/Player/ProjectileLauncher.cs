@@ -1,3 +1,4 @@
+using Core.Combat;
 using Input;
 using Unity.Mathematics;
 using Unity.Netcode;
@@ -79,7 +80,12 @@ namespace Core.Player
             projectile.transform.up = direction;
             
             Physics2D.IgnoreCollision(playerCollider, projectile.GetComponent<Collider2D>());
-            
+
+            if (projectile.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact dealDamageOnContact))
+            {
+                dealDamageOnContact.SetOwner(OwnerClientId);
+            }
+
             if (projectile.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
             {
                 rb.velocity = rb.transform.up * projectileSpeed;
