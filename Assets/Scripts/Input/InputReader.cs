@@ -9,6 +9,7 @@ namespace Input
     public class InputReader : ScriptableObject, Controls.IPlayerActions
     {
         public event Action<Vector2> MoveEvent;
+        public Vector2 AimPosition { get; private set; }
         public event Action<bool> PrimaryFireEvent;
         
         private Controls _controls;
@@ -42,6 +43,10 @@ namespace Input
                 
             }
         }
-        
+
+        public void OnAim(InputAction.CallbackContext context)
+        {
+            AimPosition = context.ReadValue<Vector2>(); 
+        }
     }
 }
