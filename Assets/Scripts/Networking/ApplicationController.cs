@@ -27,12 +27,17 @@ namespace Networking
             }
             else
             {
-                var clientSingleton = Instantiate(clientPrefab);
-                await clientSingleton.CreateClient();
-                
                 var hostSingleton = Instantiate(hostPrefab);
                 hostSingleton.CreateHost();
                 
+                var clientSingleton = Instantiate(clientPrefab);
+                var autenticated = await clientSingleton.CreateClient();
+
+                if (autenticated)
+                {
+                    clientSingleton.ClientGameManager.GoToMenu();
+                }
+
                 //Go to Main Menu
 
             }

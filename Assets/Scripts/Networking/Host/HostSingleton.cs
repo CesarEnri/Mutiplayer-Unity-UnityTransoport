@@ -1,15 +1,13 @@
-﻿using System.Threading.Tasks;
-using Networking.Client;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Networking.Host
 {
     public class HostSingleton: MonoBehaviour
     {
         private static HostSingleton instance;
-        private HostGameManager _hostGameManager;
+        public HostGameManager HostGameManager { get; private set; }
 
-        private static HostSingleton Instace
+        public static HostSingleton Instance
         {
             get
             {
@@ -38,7 +36,7 @@ namespace Networking.Host
 
         public void CreateHost()
         {
-            _hostGameManager = new HostGameManager();
+            HostGameManager = new HostGameManager();
         }
     }
 }

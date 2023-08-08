@@ -509,7 +509,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 387628295}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1032860710}
+        m_TargetAssemblyTypeName: UI.MainMenu, Assembly-CSharp
+        m_MethodName: StartClientAsync
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &387628295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1218,6 +1230,7 @@ GameObject:
   - component: {fileID: 1032860709}
   - component: {fileID: 1032860708}
   - component: {fileID: 1032860707}
+  - component: {fileID: 1032860710}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -1312,6 +1325,19 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1032860710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1032860705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e277e2d00e74a0d8eff4a2205b1be99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  joinCOdeField: {fileID: 1374820853}
 --- !u!1 &1289884763
 GameObject:
   m_ObjectHideFlags: 0
@@ -1395,7 +1421,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1289884766}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1032860710}
+        m_TargetAssemblyTypeName: UI.MainMenu, Assembly-CSharp
+        m_MethodName: StartHostAsync
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1289884766
 MonoBehaviour:
   m_ObjectHideFlags: 0
