@@ -1,3 +1,5 @@
+using System;
+using Core.Coins;
 using Core.Combat;
 using Input;
 using Unity.Mathematics;
@@ -11,6 +13,8 @@ namespace Core.Player
     {
         [Header("References")]
         [SerializeField] private InputReader inputReader;
+
+        [SerializeField] private CoinWallet coinWallet;
         [SerializeField] private Transform projectSpawnPoint;
         [SerializeField] private GameObject serverProjectilePrefab;
         [SerializeField] private GameObject clientProjectilePrefab;
@@ -20,11 +24,12 @@ namespace Core.Player
         [Header("Settings")] [SerializeField] private float projectileSpeed;
         [SerializeField] private float fireRate;
         [SerializeField] private float muzzleFlashDuration;
-        
+        [SerializeField] private int costToFire;
 
 
         private bool _shouldFire;
-        private float _previousFireTime;
+        private float timer;
+
         private float _muzzleFlashTimer;
 
         public override void OnNetworkSpawn()
@@ -48,6 +53,7 @@ namespace Core.Player
 
         private void Update()
         {
+            
             if (_muzzleFlashTimer > 0f)
             {
                 _muzzleFlashTimer -= Time.deltaTime;
@@ -59,22 +65,34 @@ namespace Core.Player
             }
 
             if (!IsOwner) return;
-            
+
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+            }
+
             if(!_shouldFire) return;
             
-            if(Time.time < 1 / fireRate + _previousFireTime)
+            if(timer > 0) return;
+            
+            if(coinWallet.totalCoins.Value < costToFire)
                 return;
 
             PrimaryFireServerRpc(projectSpawnPoint.position, projectSpawnPoint.up);
             
             SpawnDummyProjectile(projectSpawnPoint.position, projectSpawnPoint.up);
             
-            _previousFireTime = Time.time;
+            timer = 1 / fireRate;
         }
         
         [ServerRpc]
         private void PrimaryFireServerRpc(Vector3 spawnPos, Vector3 direction)
         {
+            if(coinWallet.totalCoins.Value < costToFire)
+                return;
+
+            coinWallet.SpendCoins(costToFire);
+            
             var projectile = Instantiate(serverProjectilePrefab, spawnPos, quaternion.identity);
 
             projectile.transform.up = direction;

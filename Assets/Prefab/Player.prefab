@@ -686,6 +686,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputReader: {fileID: 11400000, guid: 2548ceeb8ca140146b2a850095f94bc4, type: 2}
+  coinWallet: {fileID: 7801414447912968744}
   projectSpawnPoint: {fileID: 5447590894340558623}
   serverProjectilePrefab: {fileID: 7478587330461345517, guid: ba89b44154381b740bfc742dcac23eeb, type: 3}
   clientProjectilePrefab: {fileID: 3722194709139134022, guid: 5933763945123c44fae67278fe8b996d, type: 3}
@@ -694,6 +695,7 @@ MonoBehaviour:
   projectileSpeed: 30
   fireRate: 0.75
   muzzleFlashDuration: 0.075
+  costToFire: 5
 --- !u!114 &3353815537333174024
 MonoBehaviour:
   m_ObjectHideFlags: 0

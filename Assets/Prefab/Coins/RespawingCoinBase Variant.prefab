@@ -56,6 +56,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RespawingCoinBase Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 2471339434251434796, guid: 8bd3e62294aa61747933d75f3a78fbd3, type: 3}
+      propertyPath: m_Radius
+      value: 0.0001
+      objectReference: {fileID: 0}
     - target: {fileID: 3575870568309772996, guid: 8bd3e62294aa61747933d75f3a78fbd3, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 951099334
@@ -66,7 +70,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 186545910265042238, guid: 8bd3e62294aa61747933d75f3a78fbd3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 431882278039393285}
+      addedObject: {fileID: 74}
   m_SourcePrefab: {fileID: 100100000, guid: 8bd3e62294aa61747933d75f3a78fbd3, type: 3}
 --- !u!212 &5370167588869588190 stripped
 SpriteRenderer:
@@ -78,7 +82,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 186545910265042238, guid: 8bd3e62294aa61747933d75f3a78fbd3, type: 3}
   m_PrefabInstance: {fileID: 7527827341659946450}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &431882278039393285
+--- !u!114 &74
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
