@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Networking.Client
@@ -37,6 +38,11 @@ namespace Networking.Client
             GameManager = new ClientGameManager();
 
             return await GameManager.InitAsync();
+        }
+
+        private void OnDestroy()
+        {
+            GameManager?.Dispose();
         }
     }
 }

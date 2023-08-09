@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Networking.Server;
+using Networking.Shared;
+using UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
@@ -21,6 +26,8 @@ namespace Networking.Host
 
         private string _joinCode;
         private string _lobbyId;
+
+        private NetworkServer _networkServer;
         
         private const int MaxConnections = 20;
         
@@ -63,9 +70,10 @@ namespace Networking.Host
                             value:_joinCode)
                     }
                 };
-                
+
+                var nameLobbyPlayer = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Unknown");
                 var lobby = await Lobbies.Instance.CreateLobbyAsync(
-                    "My Lobby", MaxConnections, lobbyOptions);
+                    $"{nameLobbyPlayer}'s Lobby ", MaxConnections, lobbyOptions);
 
                 _lobbyId = lobby.Id;
 
@@ -77,6 +85,19 @@ namespace Networking.Host
                 return;
             }
 
+            _networkServer = new NetworkServer(NetworkManager.Singleton);
+
+            var userData = new UserData
+            {
+                userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
+                userAuthId = AuthenticationService.Instance.PlayerId
+            };
+
+            var payload = JsonUtility.ToJson(userData);
+            var payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+            
             NetworkManager.Singleton.StartHost();
             NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
         }
