@@ -49,6 +49,21 @@ namespace Networking.Server
             }
         }
 
+        public UserData GetUserDataByClientID(ulong clientId)
+        {
+            if (_clientIdToAuth.TryGetValue(clientId, out string authId))
+            {
+                if (_authIdToUserData.TryGetValue(authId, out UserData data))
+                {
+                    return data;
+                }
+
+                return null;
+            }
+
+            return null;
+        }
+
         public void Dispose()
         {
             // TODO release managed resources here
@@ -56,8 +71,13 @@ namespace Networking.Server
                 return;
 
             _networkManager.ConnectionApprovalCallback -= ApprovalCheck;
-            _networkManager.OnClientDisconnectCallback -= ApprovalCheck;
-            _networkManager.OnServerStarted -= ApprovalCheck;
+            _networkManager.OnClientDisconnectCallback -= OnClientDisconnect;
+            _networkManager.OnServerStarted -= OnNetworkReady;
+
+            if (_networkManager.IsListening)
+            {
+                _networkManager.Shutdown();
+            }
         }
     }
 }

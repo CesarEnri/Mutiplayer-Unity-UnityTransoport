@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Networking.Host
 {
@@ -37,6 +38,11 @@ namespace Networking.Host
         public void CreateHost()
         {
             HostGameManager = new HostGameManager();
+        }
+
+        private void OnDestroy()
+        {
+            HostGameManager?.Dispose();
         }
     }
 }

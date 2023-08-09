@@ -19,7 +19,7 @@ using UnityEngine.SceneManagement;
 
 namespace Networking.Host
 {
-    public class HostGameManager
+    public class HostGameManager: IDisposable
     {
         private Allocation _allocation;
         private const string GameSceneName = "Game";
@@ -27,8 +27,8 @@ namespace Networking.Host
         private string _joinCode;
         private string _lobbyId;
 
-        private NetworkServer _networkServer;
-        
+        public NetworkServer NetworkServer { get; private set; }
+
         private const int MaxConnections = 20;
         
         public async Task StartHostAsync()
@@ -85,7 +85,7 @@ namespace Networking.Host
                 return;
             }
 
-            _networkServer = new NetworkServer(NetworkManager.Singleton);
+            NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
             var userData = new UserData
             {
@@ -114,5 +114,25 @@ namespace Networking.Host
         }
 
 
+        public async void Dispose()
+        {
+            HostSingleton.Instance.StopCoroutine(nameof(HearBeatLobby));
+
+            if (string.IsNullOrEmpty(_lobbyId))
+            {
+                try
+                {
+                    await Lobbies.Instance.DeleteLobbyAsync(_lobbyId);
+                }
+                catch (LobbyServiceException e)
+                {
+                    Debug.Log(e);
+                }
+                
+                _lobbyId = string.Empty;
+            }
+
+            NetworkServer?.Dispose();
+        }
     }
 }
