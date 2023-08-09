@@ -3209,7 +3209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ac8723e8eedda7428a938fe3e452934, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinPrefab: {fileID: 74, guid: 40b6fb21f9810ed45b2e42c590c9c54b, type: 3}
+  coinPrefab: {fileID: 81, guid: 40b6fb21f9810ed45b2e42c590c9c54b, type: 3}
   maxCoins: 200
   coinValue: 10
   xSpawnRange: {x: -50, y: 50}

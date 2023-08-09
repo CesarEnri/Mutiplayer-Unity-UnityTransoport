@@ -14,24 +14,19 @@ namespace Networking.Client
     public class ClientGameManager
     {
         private JoinAllocation _allocation;
+
         private const string MenuSceneName = "Menu";
-        
+
         public async Task<bool> InitAsync()
         {
-            //Authenticate player
             await UnityServices.InitializeAsync();
 
-            var authState =  await AuthenticationWrapper.DoAuth();
+            var authState = await AuthenticationWrapper.DoAuth();
 
-            if (authState == AuthState.Authenticated)
-            {
-                return true;
-            }
-
-            return false;
+            return authState == AuthState.Authenticated;
         }
 
-        public void GoToMenu()
+        public static void GoToMenu()
         {
             SceneManager.LoadScene(MenuSceneName);
         }
@@ -50,9 +45,9 @@ namespace Networking.Client
 
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
 
-            var relayServerData = new RelayServerData(_allocation, "dtls");
+            var relayServerData = new RelayServerData(_allocation, "udp");//dtls
             transport.SetRelayServerData(relayServerData);
-
+            
             NetworkManager.Singleton.StartClient();
         }
     }

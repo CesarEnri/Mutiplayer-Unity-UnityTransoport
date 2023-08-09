@@ -3,19 +3,17 @@ using UnityEngine;
 
 namespace Networking.Client
 {
-    public class ClientSingleton: MonoBehaviour
+    public class ClientSingleton : MonoBehaviour
     {
         private static ClientSingleton instance;
-        public ClientGameManager ClientGameManager { get; private set; }
+
+        public ClientGameManager GameManager { get; private set; }
 
         public static ClientSingleton Instance
         {
             get
             {
-                if (instance != null)
-                {
-                    return instance;
-                }
+                if (instance != null) { return instance; }
 
                 instance = FindObjectOfType<ClientSingleton>();
 
@@ -28,7 +26,6 @@ namespace Networking.Client
                 return instance;
             }
         }
-        
 
         private void Start()
         {
@@ -37,10 +34,9 @@ namespace Networking.Client
 
         public async Task<bool> CreateClient()
         {
-            ClientGameManager = new ClientGameManager();
+            GameManager = new ClientGameManager();
 
-            var result =  await ClientGameManager.InitAsync();
-            return result;
+            return await GameManager.InitAsync();
         }
     }
 }

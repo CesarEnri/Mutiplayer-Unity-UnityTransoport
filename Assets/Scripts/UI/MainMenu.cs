@@ -5,18 +5,18 @@ using UnityEngine;
 
 namespace UI
 {
-    public class MainMenu: MonoBehaviour
+    public class MainMenu : MonoBehaviour
     {
-        [SerializeField] private TMP_InputField joinCOdeField;
+        [SerializeField] private TMP_InputField joinCodeField;
 
-        public async void StartHostAsync()
+        public async void StartHost()
         {
             await HostSingleton.Instance.HostGameManager.StartHostAsync();
         }
 
-        public async void StartClientAsync()
+        public async void StartClient()
         {
-            await ClientSingleton.Instance.ClientGameManager.StartClientAsync(joinCOdeField.text);
+            await ClientSingleton.Instance.GameManager.StartClientAsync(joinCodeField.text);
         }
     }
 }

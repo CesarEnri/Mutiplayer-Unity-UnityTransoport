@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -8,7 +7,7 @@ namespace Networking.Client
 {
     public static class AuthenticationWrapper
     {
-        public static AuthState AuthState { get; private set; } = AuthState.NoAuthenticated;
+        public static AuthState AuthState { get; private set; } = AuthState.NotAuthenticated;
 
         public static async Task<AuthState> DoAuth(int maxRetries = 5)
         {
@@ -31,7 +30,7 @@ namespace Networking.Client
 
         private static async Task<AuthState> Authenticating()
         {
-            while (AuthState  == AuthState.Authenticating || AuthState == AuthState.NoAuthenticated)
+            while(AuthState == AuthState.Authenticating || AuthState == AuthState.NotAuthenticated)
             {
                 await Task.Delay(200);
             }
@@ -39,13 +38,12 @@ namespace Networking.Client
             return AuthState;
         }
 
-
         private static async Task SignInAnonymouslyAsync(int maxRetries)
-        { 
+        {
             AuthState = AuthState.Authenticating;
-            
+
             int retries = 0;
-            while (AuthState ==  AuthState.Authenticating && retries < maxRetries)
+            while (AuthState == AuthState.Authenticating && retries < maxRetries)
             {
                 try
                 {
@@ -57,15 +55,14 @@ namespace Networking.Client
                         break;
                     }
                 }
-                catch (AuthenticationException exception)
+                catch (AuthenticationException authException)
                 {
-                    Debug.Log(exception);
+                    Debug.LogError(authException);
                     AuthState = AuthState.Error;
-                    throw;
                 }
-                catch (RequestFailedException exception)
+                catch (RequestFailedException requestException)
                 {
-                    Debug.Log(exception);
+                    Debug.LogError(requestException);
                     AuthState = AuthState.Error;
                 }
 
@@ -75,7 +72,7 @@ namespace Networking.Client
 
             if (AuthState != AuthState.Authenticated)
             {
-                Debug.LogWarning($"Player was not signed in successfully after {retries} tries");
+                Debug.LogWarning($"Player was not signed in successfully after {retries} retries");
                 AuthState = AuthState.TimeOut;
             }
         }
@@ -83,10 +80,10 @@ namespace Networking.Client
 
     public enum AuthState
     {
-        NoAuthenticated,
+        NotAuthenticated,
         Authenticating,
         Authenticated,
         Error,
-        TimeOut,
+        TimeOut
     }
 }

@@ -35,7 +35,7 @@ namespace Networking
 
                 if (autenticated)
                 {
-                    clientSingleton.ClientGameManager.GoToMenu();
+                    ClientGameManager.GoToMenu();
                 }
 
                 //Go to Main Menu
