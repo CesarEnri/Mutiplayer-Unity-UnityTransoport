@@ -11,8 +11,8 @@ namespace Core.Player
         
         private void Start()
         {
-            HandlePlayerNameChanged(string.Empty, player.playerName.Value);
-            player.playerName.OnValueChanged += HandlePlayerNameChanged;
+            HandlePlayerNameChanged(string.Empty, player.PlayerName.Value);
+            player.PlayerName.OnValueChanged += HandlePlayerNameChanged;
         }
 
         private void HandlePlayerNameChanged(FixedString32Bytes oldName, FixedString32Bytes newName)
@@ -22,7 +22,7 @@ namespace Core.Player
 
         private void OnDestroy()
         {
-            player.playerName.OnValueChanged -= HandlePlayerNameChanged;
+            player.PlayerName.OnValueChanged -= HandlePlayerNameChanged;
         }
     }
 }

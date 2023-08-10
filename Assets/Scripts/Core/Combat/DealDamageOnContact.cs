@@ -28,6 +28,7 @@ namespace Core.Combat
 
             if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
             {
+                
                 health.TakeDamage(damage);
             }
         }

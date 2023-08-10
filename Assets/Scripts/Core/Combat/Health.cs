@@ -42,8 +42,9 @@ namespace Core.Combat
             var newHealth = currentHealth.Value + value;
             currentHealth.Value = Mathf.Clamp(newHealth, 0, MaxHealth);
 
-            if (currentHealth.Value == 0)
+            if (currentHealth.Value <= 0)
             {
+                Debug.Log("You are dead!");
                 OnDie?.Invoke(this);
                 isDead = true;
             }
