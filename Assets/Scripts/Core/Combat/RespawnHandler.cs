@@ -14,7 +14,7 @@ namespace Core.Combat
         {
             if (!IsServer) { return; }
 
-            TankPlayer[] players = FindObjectsOfType<TankPlayer>();
+            TankPlayer[] players = FindObjectsByType<TankPlayer>(FindObjectsSortMode.None);
             foreach (TankPlayer player in players)
             {
                 HandlePlayerSpawned(player);
