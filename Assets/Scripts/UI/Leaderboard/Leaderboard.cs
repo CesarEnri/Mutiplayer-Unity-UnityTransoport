@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Player;
 using Unity.Netcode;
 using UnityEngine;
@@ -12,6 +14,7 @@ namespace UI.Leaderboard
         [SerializeField] private LeaderboardEntityDisplay leaderboardEntityDisplayPrefab;
 
         private NetworkList<LeaderboardEntityState> _leaderboardEntities;
+        private List<LeaderboardEntityDisplay> _entityDisplays = new();
 
         private void Awake()
         {
@@ -69,6 +72,8 @@ namespace UI.Leaderboard
                 PlayerName = player.PlayerName.Value,
                 Coins = 0
             });
+
+            player.Wallet.totalCoins.OnValueChanged += (oldCoins, newCoins) => HandleCoinsChange(player.OwnerClientId, newCoins);
         }
         
         private void HandlePlayerDespawned(TankPlayer player)
@@ -82,6 +87,8 @@ namespace UI.Leaderboard
                 _leaderboardEntities.Remove(entity);
                 break;
             }
+            
+            player.Wallet.totalCoins.OnValueChanged -= (oldCoins, newCoins) => HandleCoinsChange(player.OwnerClientId, newCoins);
         }
         
         private void HandleLeaderboardEntitiesChanged(NetworkListEvent<LeaderboardEntityState> changeEvent)
@@ -89,15 +96,32 @@ namespace UI.Leaderboard
             switch (changeEvent.Type)
             {
                 case NetworkListEvent<LeaderboardEntityState>.EventType.Add:
-                    Instantiate(leaderboardEntityDisplayPrefab, leaderboardEntityHolder);                    
+                    if (!_entityDisplays.Any(x => x.ClientId == changeEvent.Value.ClientId))
+                    {
+                        var leaderboardEntity = Instantiate(leaderboardEntityDisplayPrefab, leaderboardEntityHolder);
+                        leaderboardEntity.Initialise(changeEvent.Value.ClientId, changeEvent.Value.PlayerName, changeEvent.Value.Coins);
+                        _entityDisplays.Add(leaderboardEntity);
+                    }
                     break;
                 case NetworkListEvent<LeaderboardEntityState>.EventType.Insert:
                     break;
                 case NetworkListEvent<LeaderboardEntityState>.EventType.Remove:
+                    var displayToRemove  =_entityDisplays.FirstOrDefault(x => x.ClientId == changeEvent.Value.ClientId);
+                    if (displayToRemove != null)
+                    {
+                         displayToRemove.transform.SetParent(null);
+                         Destroy(displayToRemove.gameObject);
+                         _entityDisplays.Remove(displayToRemove);
+                    }
                     break;
                 case NetworkListEvent<LeaderboardEntityState>.EventType.RemoveAt:
                     break;
                 case NetworkListEvent<LeaderboardEntityState>.EventType.Value:
+                    var displayToUpdate  =_entityDisplays.FirstOrDefault(x => x.ClientId == changeEvent.Value.ClientId);
+                    if (displayToUpdate != null)
+                    {
+                        displayToUpdate.UpdateCoins(changeEvent.Value.Coins);
+                    }
                     break;
                 case NetworkListEvent<LeaderboardEntityState>.EventType.Clear:
                     break;
@@ -106,6 +130,25 @@ namespace UI.Leaderboard
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+          
+        }
+         private void HandleCoinsChange(ulong clientId, int newCoins)
+        {
+            for (var i = 0; i < _leaderboardEntities.Count; i++)
+            {
+                if (_leaderboardEntities[i].ClientId != clientId)
+                {
+                    continue;
+                }
+
+                _leaderboardEntities[i] = new LeaderboardEntityState
+                {
+                    ClientId = _leaderboardEntities[i].ClientId,
+                    PlayerName = _leaderboardEntities[i].PlayerName,
+                    Coins = newCoins
+                };
+            }  
         }
     }
 }
