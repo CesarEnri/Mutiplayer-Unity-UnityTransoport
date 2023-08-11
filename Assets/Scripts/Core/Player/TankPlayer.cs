@@ -3,7 +3,6 @@ using Cinemachine;
 using Core.Coins;
 using Core.Combat;
 using Networking.Host;
-using Networking.Shared;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;

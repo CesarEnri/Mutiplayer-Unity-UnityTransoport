@@ -53,7 +53,7 @@ namespace Networking.Client
 
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
 
-            var relayServerData = new RelayServerData(_allocation, "udp");//dtls
+            var relayServerData = new RelayServerData(_allocation, ApplicationController.ConfigProtocol);//dtls
             transport.SetRelayServerData(relayServerData);
 
             var userData = new UserData

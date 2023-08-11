@@ -9,6 +9,8 @@ namespace Networking
     {
         [SerializeField] private ClientSingleton clientPrefab;
         [SerializeField] private HostSingleton hostPrefab;
+
+        public const string ConfigProtocol = "udp";//dtls
         
         private async void Start()
         {
