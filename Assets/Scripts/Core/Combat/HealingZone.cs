@@ -7,10 +7,10 @@ using UnityEngine.UI;
 
 namespace Core.Combat
 {
-    public class HealingZone: NetworkBehaviour
+    public class HealingZone : NetworkBehaviour
     {
-        [Header("References")]
-        [SerializeField] private Image healPowerBar;
+        [Header("References")] [SerializeField]
+        private Image healPowerBar;
 
         [Header("Settings")] [SerializeField] private int maxHealPower = 30;
         [SerializeField] private float healCooldown = 60f;
@@ -18,106 +18,118 @@ namespace Core.Combat
         [SerializeField] private int coinsPerTick = 10;
         [SerializeField] private int healthPerTick = 10;
 
-        private float _remainingCooldown;
-        private float _tickTimer;
-        
+        private float remainingCooldown;
+        private float tickTimer;
+        private List<TankPlayer> playersInZone = new List<TankPlayer>();
 
-        private List<TankPlayer> _playerInZone = new();
-
-        private NetworkVariable<int> HealtPower = new();
+        private NetworkVariable<int> HealPower = new NetworkVariable<int>();
 
         public override void OnNetworkSpawn()
         {
             if (IsClient)
             {
-                HealtPower.OnValueChanged += HandleHealPowerChanged;
-                HandleHealPowerChanged(0, HealtPower.Value);
+                HealPower.OnValueChanged += HandleHealPowerChanged;
+                HandleHealPowerChanged(0, HealPower.Value);
             }
 
             if (IsServer)
             {
-                HealtPower.Value = maxHealPower;
+                HealPower.Value = maxHealPower;
             }
-            else
-            {
-                return;
-            }
-
-            _tickTimer += Time.deltaTime;
-            if (_tickTimer >= 1/  healTickRate)
-            {
-                foreach (var player in _playerInZone)
-                {
-                    if (HealtPower.Value == 0)
-                    {
-                        break;
-                    }
-                    
-                    if(player.Health.currentHealth.Value == player.Health.MaxHealth) continue;
-                    
-                    if(player.Wallet.totalCoins.Value < coinsPerTick) continue;
-                    
-                    player.Wallet.SpendCoins(coinsPerTick);
-                    player.Health.RestoreHealth(healthPerTick);
-
-                    HealtPower.Value -= 1;
-
-                    if (HealtPower.Value <= 0)
-                    {
-                        _remainingCooldown = healCooldown;
-                    }
-                }
-
-                _tickTimer = _tickTimer % (1/healTickRate);
-            }
-            
-
         }
 
         public override void OnNetworkDespawn()
         {
             if (IsClient)
             {
-                HealtPower.OnValueChanged -= HandleHealPowerChanged;
+                HealPower.OnValueChanged -= HandleHealPowerChanged;
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D col)
         {
-            if(!IsServer) return;
-            
-            if(!other.attachedRigidbody.TryGetComponent(out TankPlayer player)) return;
-            
-            _playerInZone.Add(player);
-            
-          
+            if (!IsServer)
+            {
+                return;
+            }
+
+            if (!col.attachedRigidbody.TryGetComponent<TankPlayer>(out TankPlayer player))
+            {
+                return;
+            }
+
+            playersInZone.Add(player);
         }
 
-        private void OnTriggerExit2D(Collider2D other)
+        private void OnTriggerExit2D(Collider2D col)
         {
-            if(!IsServer) return;
-            
-            
-            if(!other.attachedRigidbody.TryGetComponent(out TankPlayer player)) return;
-            
-            _playerInZone.Remove(player);
-         
+            if (!IsServer)
+            {
+                return;
+            }
+
+            if (!col.attachedRigidbody.TryGetComponent<TankPlayer>(out TankPlayer player))
+            {
+                return;
+            }
+
+            playersInZone.Remove(player);
         }
 
         private void Update()
         {
-            if(!IsServer) return;
-
-            if (_remainingCooldown > 0f)
+            if (!IsServer)
             {
-                _remainingCooldown -= Time.deltaTime;
+                return;
+            }
 
-                if (_remainingCooldown <= 0f)
+            if (remainingCooldown > 0f)
+            {
+                remainingCooldown -= Time.deltaTime;
+
+                if (remainingCooldown <= 0f)
                 {
-                    HealtPower.Value = maxHealPower;
+                    HealPower.Value = maxHealPower;
+                }
+                else
+                {
+                    return;
                 }
             }
 
+            tickTimer += Time.deltaTime;
+            if (tickTimer >= 1 / healTickRate)
+            {
+                foreach (TankPlayer player in playersInZone)
+                {
+                    if (HealPower.Value == 0)
+                    {
+                        break;
+                    }
+
+                    if (player.Health.currentHealth.Value == player.Health.MaxHealth)
+                    {
+                        continue;
+                    }
+
+                    if (player.Wallet.totalCoins.Value < coinsPerTick)
+                    {
+                        continue;
+                    }
+
+                    player.Wallet.SpendCoins(coinsPerTick);
+                    player.Health.RestoreHealth(healthPerTick);
+
+                    HealPower.Value -= 1;
+
+                    if (HealPower.Value == 0)
+                    {
+                        remainingCooldown = healCooldown;
+                    }
+                }
+
+                tickTimer = tickTimer % (1 / healTickRate);
+            }
         }
 
         private void HandleHealPowerChanged(int oldHealPower, int newHealPower)
