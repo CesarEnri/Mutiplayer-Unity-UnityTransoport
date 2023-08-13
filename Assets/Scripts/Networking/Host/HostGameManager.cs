@@ -99,6 +99,8 @@ namespace Networking.Host
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
             
             NetworkManager.Singleton.StartHost();
+            NetworkServer.OnClientLeft += HandleClientLeft;
+            
             NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
         }
 
@@ -114,7 +116,12 @@ namespace Networking.Host
         }
 
 
-        public async void Dispose()
+        public void Dispose()
+        {
+            Shutdown();
+        }
+
+        public async Task Shutdown()
         {
             HostSingleton.Instance.StopCoroutine(nameof(HearBeatLobby));
 
@@ -131,8 +138,22 @@ namespace Networking.Host
                 
                 _lobbyId = string.Empty;
             }
+            
+            NetworkServer.OnClientLeft -= HandleClientLeft;
 
             NetworkServer?.Dispose();
+        }
+        
+        private async void HandleClientLeft(string authId)
+        {
+            try
+            {
+                await LobbyService.Instance.RemovePlayerAsync(_lobbyId, authId); 
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
         }
     }
 }

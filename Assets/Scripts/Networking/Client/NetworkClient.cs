@@ -22,6 +22,11 @@ namespace Networking.Client
             if (clientId != 0 && clientId !=  _networkManager.LocalClientId)
                 return;
 
+            Disconnect();
+        }
+
+        public void Disconnect()
+        {
             if (SceneManager.GetActiveScene().name != MenuSceneName)
             {
                 SceneManager.LoadScene(MenuSceneName);
@@ -32,7 +37,7 @@ namespace Networking.Client
                 _networkManager.Shutdown();
             }
         }
-
+        
         public void Dispose()
         {
             if (_networkManager != null)
@@ -40,5 +45,6 @@ namespace Networking.Client
                 _networkManager.OnClientDisconnectCallback -= OnClientDisconnect;
             }
         }
+        
     }
 }

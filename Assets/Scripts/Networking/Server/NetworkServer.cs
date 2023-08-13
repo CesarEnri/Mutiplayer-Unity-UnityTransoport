@@ -10,6 +10,8 @@ namespace Networking.Server
     public class NetworkServer: IDisposable
     {
         private NetworkManager _networkManager;
+        
+        public Action<string> OnClientLeft { get; set; }
 
         private Dictionary<ulong, string> _clientIdToAuth = new();
         private Dictionary<string, UserData> _authIdToUserData = new();
@@ -51,8 +53,11 @@ namespace Networking.Server
             {
                 _clientIdToAuth.Remove(clientId);
                 _authIdToUserData.Remove(authId);
+                OnClientLeft?.Invoke(authId);
             }
         }
+
+      
 
         public UserData GetUserDataByClientID(ulong clientId)
         {
