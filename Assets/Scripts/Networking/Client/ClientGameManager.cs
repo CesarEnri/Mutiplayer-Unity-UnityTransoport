@@ -56,7 +56,7 @@ namespace Networking.Client
             var relayServerData = new RelayServerData(_allocation, ApplicationController.ConfigProtocol);//dtls
             transport.SetRelayServerData(relayServerData);
 
-            var userData = new UserData
+            var userData = new GameData
             {
                 userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
                 userAuthId = AuthenticationService.Instance.PlayerId

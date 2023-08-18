@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Core;
 using Networking.Shared;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 namespace Networking.Server
@@ -14,7 +15,7 @@ namespace Networking.Server
         public Action<string> OnClientLeft { get; set; }
 
         private Dictionary<ulong, string> _clientIdToAuth = new();
-        private Dictionary<string, UserData> _authIdToUserData = new();
+        private Dictionary<string, GameData> _authIdToUserData = new();
         
         
         public NetworkServer(NetworkManager networkManager)
@@ -24,12 +25,19 @@ namespace Networking.Server
             networkManager.ConnectionApprovalCallback += ApprovalCheck;
             networkManager.OnServerStarted += OnNetworkReady;
         }
-        
+
+
+        public bool OpenConnection(string ip, int port)
+        {
+            var transport =_networkManager.gameObject.GetComponent<UnityTransport>();
+            transport.SetConnectionData(ip, (ushort)port);
+            return _networkManager.StartClient();
+        }
 
         private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
             var payload = System.Text.Encoding.UTF8.GetString(request.Payload);
-            var userData = JsonUtility.FromJson<UserData>(payload);
+            var userData = JsonUtility.FromJson<GameData>(payload);
 
             _clientIdToAuth[request.ClientNetworkId] = userData.userAuthId;
             _authIdToUserData[userData.userAuthId] = userData;
@@ -59,11 +67,11 @@ namespace Networking.Server
 
       
 
-        public UserData GetUserDataByClientID(ulong clientId)
+        public GameData GetUserDataByClientID(ulong clientId)
         {
             if (_clientIdToAuth.TryGetValue(clientId, out string authId))
             {
-                if (_authIdToUserData.TryGetValue(authId, out UserData data))
+                if (_authIdToUserData.TryGetValue(authId, out GameData data))
                 {
                     return data;
                 }

@@ -87,7 +87,7 @@ namespace Networking.Host
 
             NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
-            var userData = new UserData
+            var userData = new GameData
             {
                 userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
                 userAuthId = AuthenticationService.Instance.PlayerId

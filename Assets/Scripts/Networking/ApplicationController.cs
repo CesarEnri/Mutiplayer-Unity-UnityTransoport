@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Networking.Client;
 using Networking.Host;
+using Networking.Server;
 using UnityEngine;
 
 namespace Networking
@@ -9,23 +10,24 @@ namespace Networking
     {
         [SerializeField] private ClientSingleton clientPrefab;
         [SerializeField] private HostSingleton hostPrefab;
+        [SerializeField] private ServerSingleton serverPrefab;
 
         public const string ConfigProtocol = "udp";//dtls
         
         private async void Start()
         {
             DontDestroyOnLoad(gameObject);
-
             await LaunchInMode(SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null);
-
         }
-
-
+        
         private async Task LaunchInMode(bool isDedicatedServer)
         {
             if (isDedicatedServer)
             {
-                
+                var serverSingleton = Instantiate(serverPrefab);
+                await serverSingleton.CreateServer();
+
+                serverSingleton.GameManager.StartGameServerAsync();
             }
             else
             {
