@@ -19,6 +19,8 @@ namespace Networking.Client
     {
         private JoinAllocation _allocation;
         private NetworkClient _networkClient;
+        private MatchplayMatchmaker _matchplayMatchmaker;
+        private GameData _userData;
 
         private const string MenuSceneName = "Menu";
 
@@ -28,10 +30,23 @@ namespace Networking.Client
             await UnityServices.InitializeAsync();
 
             _networkClient = new NetworkClient(NetworkManager.Singleton);
+            _matchplayMatchmaker = new MatchplayMatchmaker();
 
             var authState = await AuthenticationWrapper.DoAuth();
 
-            return authState == AuthState.Authenticated;
+            if (authState == AuthState.Authenticated)
+            {
+                _userData = new GameData
+                {
+                    userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
+                    userAuthId = AuthenticationService.Instance.PlayerId
+                };
+
+                return true;
+
+            }
+
+            return false;
         }
 
         public static void GoToMenu()
@@ -55,19 +70,25 @@ namespace Networking.Client
 
             var relayServerData = new RelayServerData(_allocation, ApplicationController.ConfigProtocol);//dtls
             transport.SetRelayServerData(relayServerData);
-
-            var userData = new GameData
-            {
-                userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
-                userAuthId = AuthenticationService.Instance.PlayerId
-            };
-
-            var payload = JsonUtility.ToJson(userData);
+            
+            var payload = JsonUtility.ToJson(_userData);
             var payloadBytes = Encoding.UTF8.GetBytes(payload);
 
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
             
             NetworkManager.Singleton.StartClient();
+        }
+
+        private async Task<MatchmakerPollingResult> GetMatchAsync()
+        {
+            var matchmakingResult = await _matchplayMatchmaker.Matchmake(_userData);
+
+            if (matchmakingResult.result == MatchmakerPollingResult.Success)
+            {
+                //Connect to server
+            }
+
+            return matchmakingResult.result;
         }
 
         public void Disconnect()

@@ -16,6 +16,7 @@ namespace Core.Player
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
         [SerializeField] private SpriteRenderer minimapIconRender;
+        [SerializeField] private Texture2D crossHair;
         
         [field: SerializeField] public Health Health { get; private set; }
         [field: SerializeField] public CoinWallet Wallet { get; private set; }
@@ -46,6 +47,9 @@ namespace Core.Player
             {
                 virtualCamera.Priority = ownerPriority;
                 minimapIconRender.color = ownerColour;
+                
+                Cursor.SetCursor(crossHair, new Vector2(crossHair.width / 2, crossHair.height / 2), CursorMode.Auto);
+                
             }
         }
 

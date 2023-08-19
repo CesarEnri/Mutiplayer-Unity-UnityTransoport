@@ -12,7 +12,9 @@ namespace UI
         
         private void Start()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_EDITOR_64 || UNITY_EDITOR || UNITY_EDITOR_WIN
+            JoystickAndroid.SetActive(false);
+#elif UNITY_ANDROID
             JoystickAndroid.SetActive(true);
 #endif  
         }
