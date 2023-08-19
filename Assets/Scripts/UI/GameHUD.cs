@@ -1,4 +1,4 @@
-using System;
+using System.Threading.Tasks;
 using Networking.Client;
 using Networking.Host;
 using Unity.Netcode;
@@ -8,18 +8,18 @@ namespace UI
 {
     public class GameHUD : MonoBehaviour
     {
-        [SerializeField] private GameObject JoystickAndroid;
+        [SerializeField] private GameObject joystickAndroid;
         
         private void Start()
         {
-#if UNITY_EDITOR_64 || UNITY_EDITOR || UNITY_EDITOR_WIN
-            JoystickAndroid.SetActive(false);
+#if UNITY_EDITOR
+            joystickAndroid.SetActive(false);
 #elif UNITY_ANDROID
-            JoystickAndroid.SetActive(true);
+            joystickAndroid.SetActive(true);
 #endif  
         }
 
-        public void LeaveGame()
+        public void  LeaveGame()
         {
             if (NetworkManager.Singleton.IsHost)
             {

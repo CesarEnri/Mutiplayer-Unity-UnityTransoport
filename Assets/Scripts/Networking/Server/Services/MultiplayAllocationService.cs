@@ -1,3 +1,4 @@
+#if UNITY_SERVER || UNITY_EDITOR
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -169,3 +170,4 @@ namespace Networking.Server.Services
         }
     }
 }
+#endif 

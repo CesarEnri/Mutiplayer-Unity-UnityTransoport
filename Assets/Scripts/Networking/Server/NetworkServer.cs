@@ -11,8 +11,11 @@ namespace Networking.Server
     public class NetworkServer: IDisposable
     {
         private NetworkManager _networkManager;
-        
-        public Action<string> OnClientLeft { get; set; }
+
+        public Action<string> OnClientLeft;
+        public Action<GameData> OnUserJoined;
+        public Action<GameData> OnUserLeft;
+      
 
         private Dictionary<ulong, string> _clientIdToAuth = new();
         private Dictionary<string, GameData> _authIdToUserData = new();
@@ -41,7 +44,7 @@ namespace Networking.Server
 
             _clientIdToAuth[request.ClientNetworkId] = userData.userAuthId;
             _authIdToUserData[userData.userAuthId] = userData;
-
+            OnUserJoined?.Invoke(userData);
             
             //Accion cuando el jugador entra a la partida
             response.Approved = true;
@@ -60,6 +63,7 @@ namespace Networking.Server
             if (_clientIdToAuth.TryGetValue(clientId, out string authId))
             {
                 _clientIdToAuth.Remove(clientId);
+                OnUserLeft?.Invoke(_authIdToUserData[authId]);
                 _authIdToUserData.Remove(authId);
                 OnClientLeft?.Invoke(authId);
             }

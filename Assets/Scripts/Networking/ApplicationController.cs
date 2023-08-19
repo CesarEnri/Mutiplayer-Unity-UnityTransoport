@@ -13,6 +13,8 @@ namespace Networking
         [SerializeField] private ServerSingleton serverPrefab;
 
         public const string ConfigProtocol = "udp";//dtls
+
+        private ApplicationData _applicationData;
         
         private async void Start()
         {
@@ -24,10 +26,12 @@ namespace Networking
         {
             if (isDedicatedServer)
             {
+                _applicationData = new ApplicationData();
                 var serverSingleton = Instantiate(serverPrefab);
                 await serverSingleton.CreateServer();
 
-                serverSingleton.GameManager.StartGameServerAsync();
+                await serverSingleton.GameManager.StartGameServerAsync();
+              
             }
             else
             {

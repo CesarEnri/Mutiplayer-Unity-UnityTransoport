@@ -54,6 +54,13 @@ namespace Networking.Client
             SceneManager.LoadScene(MenuSceneName);
         }
 
+        public void StartClient(string ip, int port)
+        {
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.SetConnectionData(ip, (ushort)port);
+            ConnectClient();
+        }
+
         public async Task StartClientAsync(string joinCode)
         {
             try
@@ -71,6 +78,11 @@ namespace Networking.Client
             var relayServerData = new RelayServerData(_allocation, ApplicationController.ConfigProtocol);//dtls
             transport.SetRelayServerData(relayServerData);
             
+            ConnectClient();
+        }
+
+        private void ConnectClient()
+        {
             var payload = JsonUtility.ToJson(_userData);
             var payloadBytes = Encoding.UTF8.GetBytes(payload);
 
@@ -79,13 +91,24 @@ namespace Networking.Client
             NetworkManager.Singleton.StartClient();
         }
 
+        public async void MatchmakerAsync(Action<MatchmakerPollingResult> onMatchResponse)
+        {
+            if (_matchplayMatchmaker.IsMatchmaking)
+            {
+                return;
+            }
+
+            var matchResult  = await GetMatchAsync();
+            onMatchResponse?.Invoke(matchResult);
+        }
+
         private async Task<MatchmakerPollingResult> GetMatchAsync()
         {
             var matchmakingResult = await _matchplayMatchmaker.Matchmake(_userData);
 
             if (matchmakingResult.result == MatchmakerPollingResult.Success)
             {
-                //Connect to server
+                StartClient(matchmakingResult.ip, matchmakingResult.port);
             }
 
             return matchmakingResult.result;
@@ -101,6 +124,10 @@ namespace Networking.Client
             _networkClient?.Dispose();
         }
 
-        
+
+        public async Task CancelMatchmaking()
+        {
+            await _matchplayMatchmaker.CancelMatchmaking();
+        }
     }
 }

@@ -123,10 +123,10 @@ namespace Networking.Host
 
         public async Task Shutdown()
         {
-            HostSingleton.Instance.StopCoroutine(nameof(HearBeatLobby));
+            if (string.IsNullOrEmpty(_lobbyId))return;
+            
+                HostSingleton.Instance.StopCoroutine(nameof(HearBeatLobby));
 
-            if (string.IsNullOrEmpty(_lobbyId))
-            {
                 try
                 {
                     await Lobbies.Instance.DeleteLobbyAsync(_lobbyId);
@@ -137,7 +137,6 @@ namespace Networking.Host
                 }
                 
                 _lobbyId = string.Empty;
-            }
             
             NetworkServer.OnClientLeft -= HandleClientLeft;
 

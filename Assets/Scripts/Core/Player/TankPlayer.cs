@@ -3,6 +3,8 @@ using Cinemachine;
 using Core.Coins;
 using Core.Combat;
 using Networking.Host;
+using Networking.Server;
+using Networking.Shared;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -35,9 +37,16 @@ namespace Core.Player
         {
             if (IsServer)
             {
-                var userData =
-                    HostSingleton.Instance.HostGameManager.NetworkServer.GetUserDataByClientID(OwnerClientId);
-
+                GameData userData = null;
+                if (IsHost)
+                {
+                    userData= HostSingleton.Instance.HostGameManager.NetworkServer.GetUserDataByClientID(OwnerClientId);
+                }
+                else
+                {
+                    userData = ServerSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientID(OwnerClientId);
+                }
+                
                 PlayerName.Value = userData.userName;
 
                 OnPlayerSpawned?.Invoke(this);
