@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 namespace Networking.Host
 {
@@ -20,7 +21,6 @@ namespace Networking.Host
 
                 if (instance == null)
                 {
-                    Debug.LogError("No HostSingleton in the scene!");
                     return null;
                 }
 
@@ -34,9 +34,9 @@ namespace Networking.Host
             DontDestroyOnLoad(gameObject);
         }
 
-        public void CreateHost()
+        public void CreateHost(NetworkObject playerPrefab)
         {
-            HostGameManager = new HostGameManager();
+            HostGameManager = new HostGameManager(playerPrefab);
         }
 
         private void OnDestroy()

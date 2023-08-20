@@ -9,6 +9,8 @@ namespace Utils
 
         private void OnDestroy()
         {
+            if(!gameObject.scene.isLoaded) return;
+            
             var data = Instantiate(prefab, transform.position, Quaternion.identity);
             Destroy(data, 0.75f);
         }

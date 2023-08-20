@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Core;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -10,6 +11,7 @@ namespace Networking.Server
     public class NetworkServer: IDisposable
     {
         private NetworkManager _networkManager;
+        private NetworkObject _playerPrefab;
 
         public Action<string> OnClientLeft;
         public Action<UserData> OnUserJoined;
@@ -18,12 +20,13 @@ namespace Networking.Server
 
         private Dictionary<ulong, string> _clientIdToAuth = new();
         private Dictionary<string, UserData> _authIdToUserData = new();
-        
-        
-        public NetworkServer(NetworkManager networkManager)
+
+
+        public NetworkServer(NetworkManager networkManager, NetworkObject playerPrefab)
         {
             _networkManager = networkManager;
-
+            _playerPrefab = playerPrefab;
+            
             networkManager.ConnectionApprovalCallback += ApprovalCheck;
             networkManager.OnServerStarted += OnNetworkReady;
         }
@@ -46,12 +49,19 @@ namespace Networking.Server
             OnUserJoined?.Invoke(userData);
             
             //Accion cuando el jugador entra a la partida
+            _ = SpawnPlayerDelayed(request.ClientNetworkId);
             response.Approved = true;
-            response.Position = SpawnPoint.GetRandomSpawnPos();
-            response.Rotation = Quaternion.identity;
-            response.CreatePlayerObject = true;
+            response.CreatePlayerObject = false;
         }
-        
+
+        private async Task SpawnPlayerDelayed(ulong clientId)
+        {
+            await Task.Delay(1000);
+
+            var playerInstance = GameObject.Instantiate(_playerPrefab, SpawnPoint.GetRandomSpawnPos(), Quaternion.identity);
+            playerInstance.SpawnAsPlayerObject(clientId);
+        }
+
         private void OnNetworkReady()
         {
             _networkManager.OnClientDisconnectCallback += OnClientDisconnect;

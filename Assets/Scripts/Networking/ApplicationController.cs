@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Networking.Client;
 using Networking.Host;
 using Networking.Server;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Networking
 {
@@ -11,9 +15,12 @@ namespace Networking
         [SerializeField] private ClientSingleton clientPrefab;
         [SerializeField] private HostSingleton hostPrefab;
         [SerializeField] private ServerSingleton serverPrefab;
+        [SerializeField] private NetworkObject playerPrefab;
 
         public const string ConfigProtocol = "udp";//dtls
 
+        
+        private const string GameSceneName = "Game";
         private ApplicationData _applicationData;
         
         private async void Start()
@@ -26,17 +33,17 @@ namespace Networking
         {
             if (isDedicatedServer)
             {
+                Application.targetFrameRate = 60;
+                
                 _applicationData = new ApplicationData();
                 var serverSingleton = Instantiate(serverPrefab);
-                await serverSingleton.CreateServer();
 
-                await serverSingleton.GameManager.StartGameServerAsync();
-              
+                StartCoroutine(LoadGameSceneAsync(serverSingleton));
             }
             else
             {
                 var hostSingleton = Instantiate(hostPrefab);
-                hostSingleton.CreateHost();
+                hostSingleton.CreateHost(playerPrefab);
                 
                 var clientSingleton = Instantiate(clientPrefab);
                 var autenticated = await clientSingleton.CreateClient();
@@ -45,13 +52,27 @@ namespace Networking
                 {
                     ClientGameManager.GoToMenu();
                 }
-
-                //Go to Main Menu
-
             }
             
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
+        private IEnumerator LoadGameSceneAsync(ServerSingleton serverSingleton)
+        {
+             var asyncOperation =  SceneManager.LoadSceneAsync(GameSceneName);
+
+             while (!asyncOperation.isDone)
+             {
+                 yield return null;
+             }
+             
+             var createServerTask = serverSingleton.CreateServer(playerPrefab);
+             yield return new WaitUntil(() => createServerTask.IsCompleted);
+            
+             var startServerTask = serverSingleton.GameManager.StartGameServerAsync();
+             yield return new WaitUntil(() => startServerTask.IsCompleted);
+             
+        }
 
     }
 }

@@ -20,7 +20,6 @@ namespace Networking.Client
 
                 if (instance == null)
                 {
-                    Debug.LogError("No ClientSingleton in the scene!");
                     return null;
                 }
 
