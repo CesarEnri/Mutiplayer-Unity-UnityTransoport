@@ -1,3 +1,4 @@
+ using Core.Player;
  using Unity.Netcode;
 using UnityEngine;
 
@@ -5,28 +6,29 @@ namespace Core.Combat
 {
     public class DealDamageOnContact : MonoBehaviour
     {
+        [SerializeField] private Projectile projectile;
+        
         [SerializeField] private int damage = 5;
 
-        public void SetOwner(ulong ownerClientId)
-        {
-            this.ownerClientId = ownerClientId;
-        }
-
-        private ulong ownerClientId;
+     //   private ulong ownerClientId;
 
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.attachedRigidbody == null) return;
-            
-            if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
-            {
-                if (ownerClientId == networkObject.OwnerClientId)
-                {
-                    return;
-                }
-            }
 
-            if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
+            if (projectile.TeamIndex != -1)
+            {
+                if (other.attachedRigidbody.TryGetComponent(out TankPlayer player))
+                {
+                    if (player.TeamIndex.Value == projectile.TeamIndex)
+                    {
+                        return;
+                    }
+                }    
+            }
+            
+
+            if (other.attachedRigidbody.TryGetComponent(out Health health))
             {
                 
                 health.TakeDamage(damage);

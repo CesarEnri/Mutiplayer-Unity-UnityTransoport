@@ -25,7 +25,7 @@ namespace Networking.Host
         
         private const string GameSceneName = "Game";
 
-        private string _joinCode;
+        public string JoinCode { get; private set; }
         private string _lobbyId;
 
         public NetworkServer NetworkServer { get; private set; }
@@ -52,8 +52,8 @@ namespace Networking.Host
             
             try
             {
-                _joinCode = await Relay.Instance.GetJoinCodeAsync(_allocation.AllocationId);
-                Debug.Log(_joinCode);
+                JoinCode = await Relay.Instance.GetJoinCodeAsync(_allocation.AllocationId);
+                Debug.Log(JoinCode);
             }
             catch (Exception e)
             {
@@ -74,7 +74,7 @@ namespace Networking.Host
                 {
                     {
                         "JoinCode", new DataObject(visibility: DataObject.VisibilityOptions.Member,
-                            value:_joinCode)
+                            value:JoinCode)
                     }
                 };
 

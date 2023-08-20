@@ -5143,6 +5143,7 @@ GameObject:
   - component: {fileID: 5571576307868415327}
   - component: {fileID: 7077517331730174514}
   - component: {fileID: 3082508136752492484}
+  - component: {fileID: 8482447378546301601}
   m_Layer: 0
   m_Name: TankTreads
   m_TagString: Untagged
@@ -5296,6 +5297,23 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &8482447378546301601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5321364351791165672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45be97ce92a1f00439d19c3dbde86530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamColourLookup: {fileID: 11400000, guid: 2940481b7e2f5dd4fbea3b30b4c36473, type: 2}
+  player: {fileID: 2222814947788486266}
+  playerSprites:
+  - {fileID: 4494377480875337967}
+  - {fileID: 6159756627840413618}
 --- !u!1 &5624048484885779576
 GameObject:
   m_ObjectHideFlags: 0
@@ -10691,6 +10709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45bb88922b3860c43a46f3a1f2920da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 2222814947788486266}
   inputReader: {fileID: 11400000, guid: 2548ceeb8ca140146b2a850095f94bc4, type: 2}
   coinWallet: {fileID: 7801414447912968744}
   projectSpawnPoint: {fileID: 5447590894340558623}
@@ -10794,6 +10813,8 @@ MonoBehaviour:
         byte0027: 0
         byte0028: 0
         byte0029: 0
+  TeamIndex:
+    m_InternalValue: 0
 --- !u!1 &7078293443076383895
 GameObject:
   m_ObjectHideFlags: 0
@@ -11057,7 +11078,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9073650002960313859}
   serializedVersion: 8
-  lengthInSec: 0.75
+  lengthInSec: 2
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -11132,7 +11153,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.75
+      scalar: 2
       minScalar: 5
       maxCurve:
         serializedVersion: 2

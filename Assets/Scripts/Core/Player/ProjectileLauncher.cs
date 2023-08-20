@@ -13,6 +13,7 @@ namespace Core.Player
     public class ProjectileLauncher : NetworkBehaviour
     {
         [Header("References")]
+        [SerializeField] private TankPlayer player;
         [SerializeField] private InputReader inputReader;
 
         [SerializeField] private CoinWallet coinWallet;
@@ -88,7 +89,7 @@ namespace Core.Player
 
             PrimaryFireServerRpc(projectSpawnPoint.position, projectSpawnPoint.up);
             
-            SpawnDummyProjectile(projectSpawnPoint.position, projectSpawnPoint.up);
+            SpawnDummyProjectile(projectSpawnPoint.position, projectSpawnPoint.up, player.TeamIndex.Value);
             
             timer = 1 / fireRate;
         }
@@ -101,44 +102,49 @@ namespace Core.Player
 
             coinWallet.SpendCoins(costToFire);
             
-            var projectile = Instantiate(serverProjectilePrefab, spawnPos, quaternion.identity);
+            var projectileInstance = Instantiate(serverProjectilePrefab, spawnPos, quaternion.identity);
 
-            projectile.transform.up = direction;
+            projectileInstance.transform.up = direction;
             
-            Physics2D.IgnoreCollision(playerCollider, projectile.GetComponent<Collider2D>());
-
-            if (projectile.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact dealDamageOnContact))
+            Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
+            
+            if (projectileInstance.TryGetComponent(out Projectile projectile))
             {
-                dealDamageOnContact.SetOwner(OwnerClientId);
+                projectile.Initialise(player.TeamIndex.Value);
             }
 
-            if (projectile.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
+            if (projectile.TryGetComponent(out Rigidbody2D rb))
             {
                 rb.velocity = rb.transform.up * projectileSpeed;
             }
             
-            SpawnDummyProjectileClientRpc(spawnPos, direction);
+            SpawnDummyProjectileClientRpc(spawnPos, direction, player.TeamIndex.Value);
         }
         
         // ReSharper disable Unity.PerformanceAnalysis
         [ClientRpc]
-        private void SpawnDummyProjectileClientRpc(Vector3 spawnPoint, Vector3 direction)
+        private void SpawnDummyProjectileClientRpc(Vector3 spawnPoint, Vector3 direction, int teamIndex)
         {
             if(IsOwner) return;
 
-            SpawnDummyProjectile(spawnPoint, direction);
+            SpawnDummyProjectile(spawnPoint, direction, teamIndex);
         }
         
-        private void SpawnDummyProjectile(Vector3 spawnPoint, Vector3 direction)
+        private void SpawnDummyProjectile(Vector3 spawnPoint, Vector3 direction, int teamIndex)
         {
             muzzleFlash.SetActive(true);
             _muzzleFlashTimer = muzzleFlashDuration;
             
-            var projectile = Instantiate(clientProjectilePrefab, spawnPoint, quaternion.identity);
+            var projectileInstance = Instantiate(clientProjectilePrefab, spawnPoint, quaternion.identity);
 
-            projectile.transform.up = direction;
+            projectileInstance.transform.up = direction;
             
-            Physics2D.IgnoreCollision(playerCollider, projectile.GetComponent<Collider2D>());
+            Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
+            
+            if (projectileInstance.TryGetComponent(out Projectile projectile))
+            {
+                projectile.Initialise(teamIndex);
+            }
 
             if (projectile.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
             {

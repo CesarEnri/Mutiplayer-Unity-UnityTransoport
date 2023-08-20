@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Networking.Server;
 using Unity.Netcode;
@@ -15,6 +16,8 @@ public class ServerGameManager : IDisposable
 #if UNITY_SERVER || UNITY_EDITOR      
     private MultiplayAllocationService multiplayAllocationService;
     #endif
+
+    private Dictionary<string, int> teamIdToTeamIndex = new();
 
     public NetworkServer NetworkServer { get; private set; }
 
@@ -95,7 +98,15 @@ public class ServerGameManager : IDisposable
     private void UserJoined(UserData user)
     {
 #if UNITY_SERVER || UNITY_EDITOR
-        backfiller.AddPlayerToMatch(user);
+        var team = backfiller.GetTeamByUserId(user.userAuthId);
+        if (!teamIdToTeamIndex.TryGetValue(team.TeamId, out int teamIndex))
+        {
+            teamIndex = teamIdToTeamIndex.Count;
+            teamIdToTeamIndex.Add(team.TeamId, teamIndex);
+        }
+
+        user.teamIndex = teamIndex;
+
         multiplayAllocationService.AddPlayer();
         if (!backfiller.NeedsPlayers() && backfiller.IsBackfilling)
         {

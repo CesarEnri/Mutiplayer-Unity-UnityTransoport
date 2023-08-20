@@ -6,6 +6,7 @@ using Networking.Host;
 using Networking.Server;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 
 namespace Core.Player
@@ -27,6 +28,7 @@ namespace Core.Player
         [SerializeField] private Color ownerColour;
 
         public NetworkVariable<FixedString32Bytes> PlayerName = new();
+        public NetworkVariable<int> TeamIndex = new();
 
         public static event Action<TankPlayer> OnPlayerSpawned;
         public static event Action<TankPlayer> OnPlayerDespawned;
@@ -46,7 +48,8 @@ namespace Core.Player
                 }
                 
                 PlayerName.Value = userData.userName;
-
+                TeamIndex.Value = userData.teamIndex;
+                
                 OnPlayerSpawned?.Invoke(this);
             }
 
