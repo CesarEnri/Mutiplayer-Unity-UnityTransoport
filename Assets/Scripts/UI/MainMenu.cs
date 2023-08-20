@@ -86,5 +86,10 @@ namespace UI
         {
             await ClientSingleton.Instance.GameManager.StartClientAsync(joinCodeField.text);
         }
+
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
     }
 }

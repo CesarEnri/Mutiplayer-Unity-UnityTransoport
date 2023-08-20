@@ -44,7 +44,7 @@ namespace Core.Player
         {
             if(!IsOwner) return;
 #if UNITY_ANDROID && !UNITY_EDITOR
-         _previousMovementInput = VariableJoystick.Instance.Direction;
+         _previousMovementInput = VariableJoystick.Instance.Direction.normalized;
 #else
             var zRotation = _previousMovementInput.x * -turningRate * Time.deltaTime;
             bodyTransform.Rotate(0f,0f, zRotation);      
