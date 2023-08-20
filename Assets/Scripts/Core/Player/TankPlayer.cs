@@ -4,11 +4,9 @@ using Core.Coins;
 using Core.Combat;
 using Networking.Host;
 using Networking.Server;
-using Networking.Shared;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Core.Player
 {
@@ -37,7 +35,7 @@ namespace Core.Player
         {
             if (IsServer)
             {
-                GameData userData = null;
+                UserData userData = null;
                 if (IsHost)
                 {
                     userData= HostSingleton.Instance.HostGameManager.NetworkServer.GetUserDataByClientID(OwnerClientId);

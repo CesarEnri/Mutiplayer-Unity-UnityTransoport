@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Core;
-using Networking.Shared;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -13,12 +12,12 @@ namespace Networking.Server
         private NetworkManager _networkManager;
 
         public Action<string> OnClientLeft;
-        public Action<GameData> OnUserJoined;
-        public Action<GameData> OnUserLeft;
+        public Action<UserData> OnUserJoined;
+        public Action<UserData> OnUserLeft;
       
 
         private Dictionary<ulong, string> _clientIdToAuth = new();
-        private Dictionary<string, GameData> _authIdToUserData = new();
+        private Dictionary<string, UserData> _authIdToUserData = new();
         
         
         public NetworkServer(NetworkManager networkManager)
@@ -40,7 +39,7 @@ namespace Networking.Server
         private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
             var payload = System.Text.Encoding.UTF8.GetString(request.Payload);
-            var userData = JsonUtility.FromJson<GameData>(payload);
+            var userData = JsonUtility.FromJson<UserData>(payload);
 
             _clientIdToAuth[request.ClientNetworkId] = userData.userAuthId;
             _authIdToUserData[userData.userAuthId] = userData;
@@ -71,11 +70,11 @@ namespace Networking.Server
 
       
 
-        public GameData GetUserDataByClientID(ulong clientId)
+        public UserData GetUserDataByClientID(ulong clientId)
         {
             if (_clientIdToAuth.TryGetValue(clientId, out string authId))
             {
-                if (_authIdToUserData.TryGetValue(authId, out GameData data))
+                if (_authIdToUserData.TryGetValue(authId, out UserData data))
                 {
                     return data;
                 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Networking.Server;
-using Networking.Shared;
 using UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -87,7 +86,7 @@ namespace Networking.Host
 
             NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
-            var userData = new GameData
+            var userData = new UserData 
             {
                 userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
                 userAuthId = AuthenticationService.Instance.PlayerId

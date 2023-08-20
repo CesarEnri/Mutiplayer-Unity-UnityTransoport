@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Networking.Shared;
 using Unity.Services.Matchmaker;
 using Unity.Services.Matchmaker.Models;
 using UnityEngine;
@@ -33,17 +32,19 @@ public class MatchplayMatchmaker : IDisposable
 
     public bool IsMatchmaking { get; private set; }
 
-    public async Task<MatchmakingResult> Matchmake(GameData data)
+    public async Task<MatchmakingResult> Matchmake(UserData data)
     {
+        Debug.Log(data.userGamePreferences.gameQueue);
+        Debug.Log(data.userGamePreferences.gameMode);
         cancelToken = new CancellationTokenSource();
 
-        string queueName = data.userGamePreferences.ToMultiplayQueue();
+        var queueName = data.userGamePreferences.ToMultiplayQueue();
         CreateTicketOptions createTicketOptions = new CreateTicketOptions(queueName);
         Debug.Log(createTicketOptions.QueueName);
 
         List<Player> players = new List<Player>
         {
-            new Player(data.userAuthId, data.userGamePreferences)
+            new(data.userAuthId, data.userGamePreferences)
         };
 
         try
@@ -118,6 +119,8 @@ public class MatchplayMatchmaker : IDisposable
         {
             string parsedIp = assignment.Ip;
             int? parsedPort = assignment.Port;
+            Debug.Log("IP: "+parsedIp+ " - PORT: "+parsedPort);
+            
             if (parsedPort == null)
             {
                 return new MatchmakingResult

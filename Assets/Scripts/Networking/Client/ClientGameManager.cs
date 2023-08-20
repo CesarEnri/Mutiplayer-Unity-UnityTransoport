@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-using Networking.Shared;
 using UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -20,7 +19,7 @@ namespace Networking.Client
         private JoinAllocation _allocation;
         private NetworkClient _networkClient;
         private MatchplayMatchmaker _matchplayMatchmaker;
-        private GameData _userData;
+        private UserData _userData;
 
         private const string MenuSceneName = "Menu";
 
@@ -36,7 +35,7 @@ namespace Networking.Client
 
             if (authState == AuthState.Authenticated)
             {
-                _userData = new GameData
+                _userData = new UserData
                 {
                     userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
                     userAuthId = AuthenticationService.Instance.PlayerId
@@ -74,7 +73,8 @@ namespace Networking.Client
             }
 
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-
+            
+            
             var relayServerData = new RelayServerData(_allocation, ApplicationController.ConfigProtocol);//dtls
             transport.SetRelayServerData(relayServerData);
             

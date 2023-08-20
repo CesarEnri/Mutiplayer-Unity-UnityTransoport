@@ -1,154 +1,132 @@
-﻿
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using Networking.Server.Services;
-using Networking.Shared;
+using Networking.Server;
 using Unity.Netcode;
 using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Networking.Server
+public class ServerGameManager : IDisposable
 {
-    public class ServerGameManager : IDisposable
+    private string serverIP;
+    private int serverPort;
+    private int queryPort;
+    private MatchplayBackfiller backfiller;
+    private MultiplayAllocationService multiplayAllocationService;
+
+    public NetworkServer NetworkServer { get; private set; }
+
+    private const string GameSceneName = "Game";
+
+    public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager)
     {
-        private string _serverIP;
-        private int _serverPort;
-        private int _queryPort;
+        this.serverIP = serverIP;
+        this.serverPort = serverPort;
+        this.queryPort = queryPort;
+        NetworkServer = new NetworkServer(manager);
+        multiplayAllocationService = new MultiplayAllocationService();
+    }
 
-        private MatchplayBackfiller _matchplayBackfiller;
+    public async Task StartGameServerAsync()
+    {
+        await multiplayAllocationService.BeginServerCheck();
 
-
-#if UNITY_SERVER || UNITY_EDITOR
-        private MultiplayAllocationService _multiplayAllocationService;
-#endif
-        
-        public NetworkServer NetworkServer { get; private set; }
-        
-        private const string GameSceneName = "Game";
-        
-        public ServerGameManager(string serverIp, int serverPort, int serverQPort,NetworkManager manager)
+        try
         {
-            _serverIP = serverIp;
-            _serverPort = serverPort;
-            _queryPort = serverQPort;
-            NetworkServer = new NetworkServer(manager);
-#if UNITY_SERVER || UNITY_EDITOR
-            _multiplayAllocationService = new MultiplayAllocationService();
-#endif            
-        }
+            MatchmakingResults matchmakerPayload = await GetMatchmakerPayload();
 
-        public async Task StartGameServerAsync()
-        {
-#if UNITY_SERVER || UNITY_EDITOR
-            await _multiplayAllocationService.BeginServerCheck();
-
-            try
+            if (matchmakerPayload != null)
             {
-                var matchmakerPayload = await GetMatchmakerPayload();
-
-                if (matchmakerPayload != null)
-                {
-                    await StartBackfill(matchmakerPayload);
-                    NetworkServer.OnUserJoined += UserJoined;
-                    NetworkServer.OnUserLeft += UserLeft;
-                }
-                else
-                {
-                    Debug.LogWarning("Matchmaker payload timed out");
-                }
+                await StartBackfill(matchmakerPayload);
+                NetworkServer.OnUserJoined += UserJoined;
+                NetworkServer.OnUserLeft += UserLeft;
             }
-            catch (Exception e)
+            else
             {
-             Debug.LogWarning(e);
-            }
-            
-
-            if (!NetworkServer.OpenConnection(_serverIP, _serverPort))
-            {
-                Debug.Log("NetworkServer did not start as expected.");
-                return;
-            }
-
-            NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
-#endif            
-        }
-
-        private async Task StartBackfill(MatchmakingResults matchmakerPayload)
-        {
-            _matchplayBackfiller = new MatchplayBackfiller($"{_serverIP}: {_serverPort}", 
-                matchmakerPayload.QueueName, matchmakerPayload.MatchProperties, 20);
-
-            if (_matchplayBackfiller.NeedsPlayers())
-            {
-                await _matchplayBackfiller.BeginBackfilling();                
+                Debug.LogWarning("Matchmaker payload timed out");
             }
         }
-
-
-        private void UserJoined(GameData user)
+        catch (Exception e)
         {
-#if UNITY_SERVER || UNITY_EDITOR
-            _matchplayBackfiller.AddPlayerToMatch(user);
-            _multiplayAllocationService.AddPlayer();
-            if (!_matchplayBackfiller.NeedsPlayers() && _matchplayBackfiller.IsBackfilling)
-            {
-                _ = _matchplayBackfiller.StopBackfill();
-                
-            }
-#endif            
+            Debug.LogWarning(e);
         }
 
-        private void UserLeft(GameData user)
+        if (!NetworkServer.OpenConnection(serverIP, serverPort))
         {
-#if UNITY_SERVER || UNITY_EDITOR
-            var playerCount = _matchplayBackfiller.RemovePlayerFromMatch(user.userAuthId);
-            _multiplayAllocationService.RemovePlayer();
-
-            if (playerCount <= 0)
-            {
-                CloseServer();
-                return;
-            }
-
-            if (_matchplayBackfiller.NeedsPlayers() && !_matchplayBackfiller.IsBackfilling)
-            {
-                _ = _matchplayBackfiller.BeginBackfilling();
-            }
-            #endif
+            Debug.LogWarning("NetworkServer did not start as expected.");
+            return;
         }
 
-        private async void CloseServer()
+        NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+    }
+
+    private async Task<MatchmakingResults> GetMatchmakerPayload()
+    {
+        Task<MatchmakingResults> matchmakerPayloadTask =
+            multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
+
+        if (await Task.WhenAny(matchmakerPayloadTask, Task.Delay(20000)) == matchmakerPayloadTask)
         {
-            await _matchplayBackfiller.StopBackfill();
-            Dispose();
-            Application.Quit();
+            return matchmakerPayloadTask.Result;
         }
 
-        private async Task<MatchmakingResults> GetMatchmakerPayload()
+        return null;
+    }
+
+    private async Task StartBackfill(MatchmakingResults payload)
+    {
+        backfiller = new MatchplayBackfiller($"{serverIP}:{serverPort}",
+            payload.QueueName,
+            payload.MatchProperties,
+            20);
+
+        if (backfiller.NeedsPlayers())
         {
-#if UNITY_SERVER || UNITY_EDITOR
-            var matchMakerPayloadTask = _multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
+            await backfiller.BeginBackfilling();
+        }
+    }
 
-            if (await Task.WhenAny(matchMakerPayloadTask, Task.Delay(20000)) == matchMakerPayloadTask)
-            {
-                return matchMakerPayloadTask.Result;
-            }
+    private void UserJoined(UserData user)
+    {
+        backfiller.AddPlayerToMatch(user);
+        multiplayAllocationService.AddPlayer();
+        if (!backfiller.NeedsPlayers() && backfiller.IsBackfilling)
+        {
+            _ = backfiller.StopBackfill();
+        }
+    }
 
-            #endif
-            return null;
+    private void UserLeft(UserData user)
+    {
+        int playerCount = backfiller.RemovePlayerFromMatch(user.userAuthId);
+        multiplayAllocationService.RemovePlayer();
+
+        if (playerCount <= 0)
+        {
+            CloseServer();
+            return;
         }
 
-        public void Dispose()
+        if (backfiller.NeedsPlayers() && !backfiller.IsBackfilling)
         {
-#if UNITY_SERVER || UNITY_EDITOR
-            NetworkServer.OnUserJoined -= UserJoined;
-            NetworkServer.OnUserLeft -= UserLeft;
-            
-            _matchplayBackfiller?.Dispose();
-            _multiplayAllocationService?.Dispose();
-            NetworkServer?.Dispose();
-#endif            
+            _ = backfiller.BeginBackfilling();
         }
+    }
+
+    private async void CloseServer()
+    {
+        await backfiller.StopBackfill();
+        Dispose();
+        Application.Quit();
+    }
+
+    public void Dispose()
+    {
+        NetworkServer.OnUserJoined -= UserJoined;
+        NetworkServer.OnUserLeft -= UserLeft;
+
+        backfiller?.Dispose();
+        multiplayAllocationService?.Dispose();
+        NetworkServer?.Dispose();
     }
 }
