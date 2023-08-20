@@ -12,7 +12,9 @@ public class ServerGameManager : IDisposable
     private int serverPort;
     private int queryPort;
     private MatchplayBackfiller backfiller;
+#if UNITY_SERVER || UNITY_EDITOR      
     private MultiplayAllocationService multiplayAllocationService;
+    #endif
 
     public NetworkServer NetworkServer { get; private set; }
 
@@ -24,11 +26,14 @@ public class ServerGameManager : IDisposable
         this.serverPort = serverPort;
         this.queryPort = queryPort;
         NetworkServer = new NetworkServer(manager);
+#if UNITY_SERVER || UNITY_EDITOR     
         multiplayAllocationService = new MultiplayAllocationService();
+#endif        
     }
 
     public async Task StartGameServerAsync()
     {
+#if UNITY_SERVER || UNITY_EDITOR
         await multiplayAllocationService.BeginServerCheck();
 
         try
@@ -58,10 +63,12 @@ public class ServerGameManager : IDisposable
         }
 
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+        #endif
     }
 
     private async Task<MatchmakingResults> GetMatchmakerPayload()
     {
+#if UNITY_SERVER || UNITY_EDITOR
         Task<MatchmakingResults> matchmakerPayloadTask =
             multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
 
@@ -70,6 +77,7 @@ public class ServerGameManager : IDisposable
             return matchmakerPayloadTask.Result;
         }
 
+        #endif
         return null;
     }
 
@@ -88,16 +96,19 @@ public class ServerGameManager : IDisposable
 
     private void UserJoined(UserData user)
     {
+#if UNITY_SERVER || UNITY_EDITOR
         backfiller.AddPlayerToMatch(user);
         multiplayAllocationService.AddPlayer();
         if (!backfiller.NeedsPlayers() && backfiller.IsBackfilling)
         {
             _ = backfiller.StopBackfill();
         }
+        #endif
     }
 
     private void UserLeft(UserData user)
     {
+#if UNITY_SERVER || UNITY_EDITOR
         int playerCount = backfiller.RemovePlayerFromMatch(user.userAuthId);
         multiplayAllocationService.RemovePlayer();
 
@@ -111,6 +122,7 @@ public class ServerGameManager : IDisposable
         {
             _ = backfiller.BeginBackfilling();
         }
+        #endif
     }
 
     private async void CloseServer()
@@ -122,11 +134,13 @@ public class ServerGameManager : IDisposable
 
     public void Dispose()
     {
+#if UNITY_SERVER || UNITY_EDITOR
         NetworkServer.OnUserJoined -= UserJoined;
         NetworkServer.OnUserLeft -= UserLeft;
 
         backfiller?.Dispose();
         multiplayAllocationService?.Dispose();
         NetworkServer?.Dispose();
+#endif        
     }
 }

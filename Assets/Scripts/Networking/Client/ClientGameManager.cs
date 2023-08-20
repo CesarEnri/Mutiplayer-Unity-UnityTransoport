@@ -108,6 +108,7 @@ namespace Networking.Client
 
             if (matchmakingResult.result == MatchmakerPollingResult.Success)
             {
+                Debug.Log("Llegamosss " +matchmakingResult.ip +":"+ matchmakingResult.port);
                 StartClient(matchmakingResult.ip, matchmakingResult.port);
             }
 
