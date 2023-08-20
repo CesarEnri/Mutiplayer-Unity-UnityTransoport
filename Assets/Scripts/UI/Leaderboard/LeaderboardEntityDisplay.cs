@@ -9,9 +9,9 @@ namespace UI.Leaderboard
     public class LeaderboardEntityDisplay: MonoBehaviour
     {
         [SerializeField] private TMP_Text displayText;
-        [SerializeField] private Color myColour;
 
-        private FixedString32Bytes _playerName;
+        private FixedString32Bytes displayName;
+        public int TeamIndex { get; private set; }
 
         public ulong ClientId { get; private set; }
         public int Coins { get; private set;}
@@ -19,12 +19,21 @@ namespace UI.Leaderboard
         public void Initialise(ulong clientId, FixedString32Bytes playerName, int coins)
         {
             ClientId = clientId;
-            _playerName = playerName;
-            if (clientId == NetworkManager.Singleton.LocalClientId)
-            {
-                displayText.color = myColour;
-            }
+            displayName = playerName;
+            
+            UpdateCoins(coins);
+        }
 
+        public void SetColour(Color colour)
+        {
+            displayText.color = colour;
+        }
+
+        public void Initialise(int teamIndex, FixedString32Bytes playerName, int coins)
+        {
+            TeamIndex = teamIndex;
+            displayName = playerName;
+            
             UpdateCoins(coins);
         }
 
@@ -36,7 +45,7 @@ namespace UI.Leaderboard
 
         public void UpdateText()
         {
-            displayText.text = $"{transform.GetSiblingIndex() + 1}. {_playerName} ({Coins})"; 
+            displayText.text = $"{transform.GetSiblingIndex() + 1}. {displayName} ({Coins})"; 
         }
     }
 }

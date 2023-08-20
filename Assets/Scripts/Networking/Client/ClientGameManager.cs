@@ -19,7 +19,7 @@ namespace Networking.Client
         private JoinAllocation _allocation;
         private NetworkClient _networkClient;
         private MatchplayMatchmaker _matchplayMatchmaker;
-        private UserData _userData;
+        public UserData UserData { get; private set; }
 
         private const string MenuSceneName = "Menu";
 
@@ -35,7 +35,7 @@ namespace Networking.Client
 
             if (authState == AuthState.Authenticated)
             {
-                _userData = new UserData
+                UserData = new UserData
                 {
                     userName = PlayerPrefs.GetString(NameSelected.PlayNameKey, "Missing Name"),
                     userAuthId = AuthenticationService.Instance.PlayerId
@@ -83,7 +83,7 @@ namespace Networking.Client
 
         private void ConnectClient()
         {
-            var payload = JsonUtility.ToJson(_userData);
+            var payload = JsonUtility.ToJson(UserData);
             var payloadBytes = Encoding.UTF8.GetBytes(payload);
 
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
@@ -98,7 +98,7 @@ namespace Networking.Client
                 return;
             }
 
-            _userData.userGamePreferences.gameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
+            UserData.userGamePreferences.gameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
 
             var matchResult  = await GetMatchAsync();
             onMatchResponse?.Invoke(matchResult);
@@ -106,7 +106,7 @@ namespace Networking.Client
 
         private async Task<MatchmakerPollingResult> GetMatchAsync()
         {
-            var matchmakingResult = await _matchplayMatchmaker.Matchmake(_userData);
+            var matchmakingResult = await _matchplayMatchmaker.Matchmake(UserData);
 
             if (matchmakingResult.result == MatchmakerPollingResult.Success)
             {

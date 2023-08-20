@@ -17,11 +17,12 @@ namespace Utils
                     {
                         if (player.TeamIndex.Value == projectile.TeamIndex)
                         {
-                            return; 
+                            return;
                         }
-                    }   
+                    }
                 }
             }
+
             Destroy(gameObject);   
         }
     }

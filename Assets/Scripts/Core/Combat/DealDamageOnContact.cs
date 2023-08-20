@@ -1,6 +1,5 @@
  using Core.Player;
- using Unity.Netcode;
-using UnityEngine;
+ using UnityEngine;
 
 namespace Core.Combat
 {
@@ -14,7 +13,7 @@ namespace Core.Combat
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.attachedRigidbody == null) return;
+            if (other.attachedRigidbody == null) { return; }
 
             if (projectile.TeamIndex != -1)
             {
@@ -24,15 +23,14 @@ namespace Core.Combat
                     {
                         return;
                     }
-                }    
+                }
             }
-            
 
             if (other.attachedRigidbody.TryGetComponent(out Health health))
             {
-                
                 health.TakeDamage(damage);
             }
+
         }
     }
 }

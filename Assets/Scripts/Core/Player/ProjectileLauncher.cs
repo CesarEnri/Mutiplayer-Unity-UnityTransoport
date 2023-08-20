@@ -146,7 +146,7 @@ namespace Core.Player
                 projectile.Initialise(teamIndex);
             }
 
-            if (projectile.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
+            if (projectile.TryGetComponent(out Rigidbody2D rb))
             {
                 rb.velocity = rb.transform.up * projectileSpeed;
             }
