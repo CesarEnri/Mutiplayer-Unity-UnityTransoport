@@ -28,14 +28,10 @@ namespace Joystick_Pack.Scripts.Joysticks
 
         protected override void Start()
         {
-#if UNITY_EDITOR_64 || UNITY_EDITOR || UNITY_EDITOR_WIN
-           
-#elif UNITY_ANDROID
             Instance = this;
             base.Start();
             fixedPosition = background.anchoredPosition;
             SetMode(joystickType);
-#endif
         }
 
         public override void OnPointerDown(PointerEventData eventData)

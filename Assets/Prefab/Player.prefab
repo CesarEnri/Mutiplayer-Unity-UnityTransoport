@@ -5314,6 +5314,7 @@ MonoBehaviour:
   playerSprites:
   - {fileID: 4494377480875337967}
   - {fileID: 6159756627840413618}
+  spriteMiniMap: {fileID: 1028503425666577109}
 --- !u!1 &5624048484885779576
 GameObject:
   m_ObjectHideFlags: 0

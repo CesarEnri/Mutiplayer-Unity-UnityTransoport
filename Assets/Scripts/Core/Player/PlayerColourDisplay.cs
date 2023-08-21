@@ -1,4 +1,5 @@
 ﻿using System;
+using Networking.Client;
 using UnityEngine;
 
 namespace Core.Player
@@ -9,6 +10,8 @@ namespace Core.Player
 
         [SerializeField] private TankPlayer player;
         [SerializeField] private SpriteRenderer[] playerSprites;
+
+        [SerializeField] private SpriteRenderer spriteMiniMap;
         
         private void Start()
         {
@@ -19,11 +22,17 @@ namespace Core.Player
 
         private void HandleTeamChanged(int olderTeamIndex, int newTeamIndex)
         {
-            var teamColour = teamColourLookup.GetTeamColour(newTeamIndex);
-
-            foreach (var playerSprite in playerSprites)
+            if (ClientSingleton.Instance.GameManager.UserData.userGamePreferences.gameQueue == GameQueue.Team)
             {
-                playerSprite.color = teamColour;
+
+                var teamColour = teamColourLookup.GetTeamColour(newTeamIndex);
+
+                foreach (var playerSprite in playerSprites)
+                {
+                    playerSprite.color = teamColour;
+                }
+
+                spriteMiniMap.color = teamColour;
             }
         }
 

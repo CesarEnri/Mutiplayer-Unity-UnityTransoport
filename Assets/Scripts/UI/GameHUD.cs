@@ -11,14 +11,14 @@ namespace UI
     {
         [SerializeField] private TMP_Text lobbyCodeText;
         
-        [SerializeField] private GameObject joystickAndroid;
+        [SerializeField] private GameObject androidControls;
 
         private NetworkVariable<FixedString32Bytes> lobbyCode = new("");
         
         private void Start()
         {
 #if UNITY_EDITOR
-            joystickAndroid.SetActive(false);
+            androidControls.SetActive(true);//false
 #elif UNITY_ANDROID
             joystickAndroid.SetActive(true);
 #endif  
@@ -31,6 +31,7 @@ namespace UI
             {
                 lobbyCode.OnValueChanged += HandleLobbyCodeChanged;
                 HandleLobbyCodeChanged("", lobbyCode.Value);
+                
             }
 
             if(!IsHost) return;
@@ -54,8 +55,6 @@ namespace UI
 
         public void  LeaveGame()
         {
-            
-            
             if (NetworkManager.Singleton.IsHost)
             {
                 HostSingleton.Instance.HostGameManager.Shutdown();

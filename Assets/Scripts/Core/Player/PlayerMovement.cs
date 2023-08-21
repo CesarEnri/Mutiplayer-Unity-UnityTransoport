@@ -43,7 +43,7 @@ namespace Core.Player
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
 #else
-            _previousMovementInput = movementInput;
+        //    _previousMovementInput = movementInput;
 #endif
         }
 
@@ -57,12 +57,13 @@ namespace Core.Player
         private void Update()
         {
             if(!IsOwner) return;
-#if UNITY_ANDROID && !UNITY_EDITOR
+//#if UNITY_ANDROID && !UNITY_EDITOR
+//Debug.Log(VariableJoystick.Instance.Direction);
          _previousMovementInput = VariableJoystick.Instance.Direction.normalized;
-#else
-            var zRotation = _previousMovementInput.x * -turningRate * Time.deltaTime;
-            bodyTransform.Rotate(0f,0f, zRotation);      
-#endif
+//#else
+//            var zRotation = _previousMovementInput.x * -turningRate * Time.deltaTime;
+//            bodyTransform.Rotate(0f,0f, zRotation);      
+//#endif
         }
 
         private void FixedUpdate()

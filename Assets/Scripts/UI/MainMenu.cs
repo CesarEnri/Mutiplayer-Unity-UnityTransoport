@@ -5,6 +5,7 @@ using TMPro;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.UI;
 using Cursor = UnityEngine.Cursor;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -14,8 +15,10 @@ namespace UI
     {
         [SerializeField] private TMP_Text queueStatusText;
         [SerializeField] private TMP_Text queueTimerText;
-        [SerializeField] private TMP_Text findMatchButtonText;
-        [SerializeField] private Toggle teamToggle;
+        
+        [SerializeField] private Button findMatchButtonText;
+        [SerializeField] private Button findTeamMatchButtonText;
+        //[SerializeField] private Toggle teamToggle;
         [SerializeField] private Toggle privateToggle;
         
 
@@ -46,7 +49,7 @@ namespace UI
             }
         }
 
-        public async void FindMatchPressed()
+        public async void FindMatchPressed(bool modeParty)
         {
             if(_isCancelling) return;
             
@@ -58,17 +61,33 @@ namespace UI
                 _isCancelling = false;
                 _isMatchmaking = false;
                 _isBusy = false;
-                findMatchButtonText.text = "Find Match";
+                if (!modeParty)
+                    findMatchButtonText.GetComponentInChildren<TMP_Text>().text ="SOLO";
+                else
+                    findTeamMatchButtonText.GetComponentInChildren<TMP_Text>().text = "TEAM";
+                findMatchButtonText.enabled = true;
+                findTeamMatchButtonText.enabled = true;
+                
                 queueStatusText.text = string.Empty;
                 queueTimerText.text = string.Empty;
                 return;
-
             }
             
             if(_isBusy) return;
             
-            ClientSingleton.Instance.GameManager.MatchmakerAsync(teamToggle.isOn,  OnMatchMade);
-            findMatchButtonText.text = "Cancel";
+            ClientSingleton.Instance.GameManager.MatchmakerAsync(modeParty,  OnMatchMade);
+            
+            if (!modeParty)
+            {
+                findMatchButtonText.GetComponentInChildren<TMP_Text>().text = "Cancel";
+                findTeamMatchButtonText.enabled = false;
+            }
+            else
+            {
+                findTeamMatchButtonText.GetComponentInChildren<TMP_Text>().text = "Cancel";
+                findMatchButtonText.enabled = false;
+            }
+            
             queueStatusText.text = "Searching...";
             _timeInQueue = 0f;
             _isMatchmaking = true;

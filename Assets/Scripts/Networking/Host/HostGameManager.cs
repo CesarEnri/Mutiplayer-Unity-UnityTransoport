@@ -84,7 +84,7 @@ namespace Networking.Host
 
                 _lobbyId = lobby.Id;
 
-                HostSingleton.Instance.StartCoroutine(HearBeatLobby(15));
+                HostSingleton.Instance.StartCoroutine(HearBeatLobby(30));
             }
             catch (LobbyServiceException e)
             {
