@@ -1,7 +1,6 @@
 using Input;
 using Unity.Netcode;
 using UnityEngine;
-using Utils;
 
 namespace Core.Player
 {
@@ -9,8 +8,7 @@ namespace Core.Player
     {
         [SerializeField] private InputReader inputReader;
         [SerializeField] private Transform turretTransform;
-
-
+        
         private void LateUpdate()
         {
             if(!IsOwner) return;
@@ -32,11 +30,11 @@ namespace Core.Player
             var position = turretTransform.position;
             
 #if UNITY_ANDROID && !UNITY_EDITOR
-            turretTransform.up = new Vector2(aimScreenPosition.x - position.x,
-                aimScreenPosition.y - position.y);
-#else
             turretTransform.up = new Vector2(aimScreenPosition.x,
-                aimScreenPosition.y - position.y);
+                aimScreenPosition.y);
+#else
+            turretTransform.up = new Vector2(aimWorldPosition.x - position.x,
+                aimWorldPosition.y - position.y);
 #endif
         }
     }
