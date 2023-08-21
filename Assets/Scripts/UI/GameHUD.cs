@@ -18,9 +18,9 @@ namespace UI
         private void Start()
         {
 #if UNITY_EDITOR
-            androidControls.SetActive(true);//false
+            androidControls.SetActive(false);//false
 #elif UNITY_ANDROID
-            joystickAndroid.SetActive(true);
+            androidControls.SetActive(true);
 #endif  
         }
 

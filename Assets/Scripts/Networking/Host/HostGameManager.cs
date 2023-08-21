@@ -123,9 +123,9 @@ namespace Networking.Host
         }
 
 
-        public void Dispose()
+        public async void Dispose()
         {
-            Shutdown();
+            await Shutdown();
         }
 
         public async Task Shutdown()

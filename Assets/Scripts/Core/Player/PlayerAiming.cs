@@ -1,6 +1,7 @@
 using Input;
 using Unity.Netcode;
 using UnityEngine;
+using Utils;
 
 namespace Core.Player
 {
@@ -9,17 +10,34 @@ namespace Core.Player
         [SerializeField] private InputReader inputReader;
         [SerializeField] private Transform turretTransform;
 
+
         private void LateUpdate()
         {
             if(!IsOwner) return;
-
-            var aimScreenPosition = inputReader.AimPosition;
+            
+            var aimScreenPosition = new Vector2();
+            #if UNITY_ANDROID && !UNITY_EDITOR
+            aimScreenPosition = AimingJoystick.Instance.Direction;
+            #else
+            aimScreenPosition =  inputReader.AimPosition;
+            #endif             
+            
             //Vector2 aimWorldPosition = Camera.main.ViewportToScreenPoint(aimScreenPosition);
+#if UNITY_ANDROID && !UNITY_EDITOR
+            //Vector2 aimWorldPosition = Camera.main.ScreenToWorldPoint(aimScreenPosition);
+#else
             Vector2 aimWorldPosition = Camera.main.ScreenToWorldPoint(aimScreenPosition);
-
+#endif
+            
             var position = turretTransform.position;
-            turretTransform.up = new Vector2(aimWorldPosition.x - position.x,
-                aimWorldPosition.y - position.y);
+            
+#if UNITY_ANDROID && !UNITY_EDITOR
+            turretTransform.up = new Vector2(aimScreenPosition.x - position.x,
+                aimScreenPosition.y - position.y);
+#else
+            turretTransform.up = new Vector2(aimScreenPosition.x,
+                aimScreenPosition.y - position.y);
+#endif
         }
     }
 }

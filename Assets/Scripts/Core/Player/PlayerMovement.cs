@@ -14,6 +14,8 @@ namespace Core.Player
         [SerializeField] private Transform bodyTransform;
         [SerializeField] private Rigidbody2D rb;
         [SerializeField] private ParticleSystem dustCloud;
+
+        //[SerializeField] private VariableJoystick movementPlayer;
         
         [Header("Settings")]
         [SerializeField] private float movementSpeed = 4f;
@@ -30,6 +32,9 @@ namespace Core.Player
         private void Awake()
         {
             _emissionModule = dustCloud.emission;
+#if UNITY_ANDROID && !UNITY_EDITOR
+          turningRate -= 30;  //android configuration
+#endif
         }
 
         public override void OnNetworkSpawn()
@@ -43,7 +48,7 @@ namespace Core.Player
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
 #else
-        //    _previousMovementInput = movementInput;
+            _previousMovementInput = movementInput;//set comment to test
 #endif
         }
 
@@ -57,13 +62,12 @@ namespace Core.Player
         private void Update()
         {
             if(!IsOwner) return;
-//#if UNITY_ANDROID && !UNITY_EDITOR
-//Debug.Log(VariableJoystick.Instance.Direction);
-         _previousMovementInput = VariableJoystick.Instance.Direction.normalized;
-//#else
-//            var zRotation = _previousMovementInput.x * -turningRate * Time.deltaTime;
-//            bodyTransform.Rotate(0f,0f, zRotation);      
-//#endif
+            
+#if UNITY_ANDROID && !UNITY_EDITOR
+         _previousMovementInput = VariableJoystick.Instance.Direction;
+#endif
+            var zRotation = _previousMovementInput.x * -turningRate * Time.deltaTime;
+            bodyTransform.Rotate(0f,0f, zRotation);
         }
 
         private void FixedUpdate()

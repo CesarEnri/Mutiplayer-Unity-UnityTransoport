@@ -29,8 +29,6 @@ namespace Editor
 
                     break;
                 }
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
     }
