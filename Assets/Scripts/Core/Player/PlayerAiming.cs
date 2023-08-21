@@ -22,7 +22,7 @@ namespace Core.Player
             
             //Vector2 aimWorldPosition = Camera.main.ViewportToScreenPoint(aimScreenPosition);
 #if UNITY_ANDROID && !UNITY_EDITOR
-            //Vector2 aimWorldPosition = Camera.main.ScreenToWorldPoint(aimScreenPosition);
+            //Vector2 aimWorldPosition = Camer.a.main.ScreenToWorldPoint(aimScreenPosition);
 #else
             Vector2 aimWorldPosition = Camera.main.ScreenToWorldPoint(aimScreenPosition);
 #endif
