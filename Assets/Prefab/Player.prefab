@@ -10657,6 +10657,7 @@ MonoBehaviour:
   movementSpeed: 5
   turningRate: 270
   particleEmissionValue: 10
+  canMove: 1
 --- !u!50 &3475542554023159533
 Rigidbody2D:
   serializedVersion: 4
@@ -10816,6 +10817,7 @@ MonoBehaviour:
         byte0029: 0
   TeamIndex:
     m_InternalValue: 0
+  playerMovement: {fileID: 756635597032814292}
 --- !u!1 &7078293443076383895
 GameObject:
   m_ObjectHideFlags: 0

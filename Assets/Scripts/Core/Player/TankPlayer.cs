@@ -30,6 +30,8 @@ namespace Core.Player
         public NetworkVariable<FixedString32Bytes> PlayerName = new();
         public NetworkVariable<int> TeamIndex = new();
 
+        [SerializeField] private PlayerMovement playerMovement;
+        
         public static event Action<TankPlayer> OnPlayerSpawned;
         public static event Action<TankPlayer> OnPlayerDespawned;
 
@@ -61,6 +63,12 @@ namespace Core.Player
                 Cursor.SetCursor(crossHair, new Vector2(crossHair.width / 2, crossHair.height / 2), CursorMode.Auto);
                 
             }
+        }
+
+
+        public void HandlePlayerMovement(bool canMove)
+        {
+            playerMovement.HandleMovementPlayer(canMove);
         }
 
         public override void OnNetworkDespawn()

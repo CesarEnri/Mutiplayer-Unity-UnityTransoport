@@ -28,6 +28,8 @@ namespace Core.Player
         private Vector3 _previousPos;
 
         private const float ParticleStopThreshold = 0.005f;
+
+        public bool canMove;
         
         private void Awake()
         {
@@ -35,6 +37,8 @@ namespace Core.Player
 #if UNITY_ANDROID && !UNITY_EDITOR
           turningRate -= 30;  //android configuration
 #endif
+
+            canMove = true;
         }
 
         public override void OnNetworkSpawn()
@@ -46,6 +50,7 @@ namespace Core.Player
 
         private void HandleMove(Vector2 movementInput)
         {
+            if(!canMove) return;
 #if UNITY_ANDROID && !UNITY_EDITOR
 #else
             _previousMovementInput = movementInput;//set comment to test
@@ -62,6 +67,9 @@ namespace Core.Player
         private void Update()
         {
             if(!IsOwner) return;
+
+            if (!canMove) return;
+            
             
 #if UNITY_ANDROID && !UNITY_EDITOR
          _previousMovementInput = VariableJoystick.Instance.Direction;
@@ -72,6 +80,8 @@ namespace Core.Player
 
         private void FixedUpdate()
         {
+            if (!canMove) return;
+            
             if ((transform.position - _previousPos).sqrMagnitude > ParticleStopThreshold)
             {
                 _emissionModule.rateOverTime = particleEmissionValue;
@@ -84,8 +94,19 @@ namespace Core.Player
             _previousPos = transform.position;
             
             if(!IsOwner) return;
-
+            
             rb.velocity = bodyTransform.up * (_previousMovementInput.y * movementSpeed);
+        }
+
+
+        public void HandleMovementPlayer(bool canMovePlayer)
+        {
+            if (!canMovePlayer)
+            {
+                canMove = false;
+                rb.velocity = Vector2.zero;
+                rb.Sleep();
+            }
         }
     }
 }
