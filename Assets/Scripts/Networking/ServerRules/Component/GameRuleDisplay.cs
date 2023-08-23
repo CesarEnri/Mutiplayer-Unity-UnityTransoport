@@ -1,5 +1,5 @@
-﻿using TMPro;
-using Unity.Collections;
+﻿using System;
+using TMPro;
 using UnityEngine;
 
 namespace Networking.ServerRules.Component
@@ -13,24 +13,28 @@ namespace Networking.ServerRules.Component
         
         private void Awake()
         {
-            modeGameQueue.text = gameRule.nameGameQueueMode.Value.Value;
-            gameRule.maxCoinsCollect.OnValueChanged += ValueMaxCoinUpdate;
-            gameRule.nameGameQueueMode.OnValueChanged += SetValueGameQueue;
+            modeGameQueue.text = gameRule.gameQueueMode.Value.ToString();
+            gameRule.timeRuleInt.OnValueChanged += ValueMaxCoinUpdate;
+
+
+            gameRule.actionOnClient += HandleClientConnect;
         }
 
-        public void SetValueGameQueue(FixedString32Bytes previousvalue, FixedString32Bytes newvalue)
+        private void HandleClientConnect(GameRule gameRule)
         {
-            modeGameQueue.text = newvalue.ToString();
+            modeGameQueue.text = gameRule.gameQueueMode.Value.ToString();
         }
-
+        
         private void ValueMaxCoinUpdate(int previousvalue, int newvalue)
         {
-            maxCoinsDisplay.text = newvalue.ToString();
+            //maxCoinsDisplay.text = newvalue.ToString();
+            var  ts = TimeSpan.FromSeconds(newvalue);
+            maxCoinsDisplay.text = $"{ts.Minutes:0}:{ts.Seconds:00}";
         }
 
         private void OnDestroy()
         {
-            gameRule.maxCoinsCollect.OnValueChanged -= ValueMaxCoinUpdate;
+            gameRule.timeRuleInt.OnValueChanged -= ValueMaxCoinUpdate;
         }
         
 

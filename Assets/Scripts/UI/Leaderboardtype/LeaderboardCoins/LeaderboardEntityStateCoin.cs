@@ -4,7 +4,7 @@ using Unity.Netcode;
 
 namespace UI.Leaderboard
 {
-    public struct LeaderboardEntityState : INetworkSerializable, IEquatable<LeaderboardEntityState>
+    public struct LeaderboardEntityStateCoin : INetworkSerializable, IEquatable<LeaderboardEntityStateCoin>
     {
         public ulong ClientId;
         public int TeamIndex;
@@ -19,7 +19,7 @@ namespace UI.Leaderboard
             serializer.SerializeValue(ref Coins);
         }
 
-        public bool Equals(LeaderboardEntityState other)
+        public bool Equals(LeaderboardEntityStateCoin other)
         {
             return ClientId == other.ClientId &&
                    TeamIndex == other.TeamIndex &&

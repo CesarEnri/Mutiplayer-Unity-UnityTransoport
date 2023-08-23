@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UI.Leaderboard
 {
-    public class LeaderboardEntityDisplay : MonoBehaviour
+    public class LeaderboardEntityDisplayCoin : MonoBehaviour
     {
         [SerializeField] private TMP_Text displayText;
 

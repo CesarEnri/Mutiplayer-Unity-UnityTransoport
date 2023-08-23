@@ -9,7 +9,7 @@ namespace Networking.Client
 
         public ClientGameManager GameManager { get; private set; }
 
-        public GameQueue gameQueue;
+        public GameInfo gameInfo;
         
         public static ClientSingleton Instance
         {

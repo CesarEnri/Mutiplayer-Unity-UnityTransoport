@@ -51,26 +51,28 @@ namespace UI
             }
         }
 
-        private GameQueue _selectedGameSoloQueue;
+        private GameInfo _selectedGameInfo;
 
         [SerializeField] private TMP_Dropdown gameQueueMode;
         
         public void ValidateGameQueueSelected()
         {
-            _selectedGameSoloQueue = gameQueueMode.options[gameQueueMode.value].text switch
+            _selectedGameInfo = ClientSingleton.Instance.GameManager.UserData.userGamePreferences; 
+            
+            _selectedGameInfo.gameQueue = gameQueueMode.options[gameQueueMode.value].text switch
             {
                 "DeathMatch" => GameQueue.SoloDeathMatch,
                 "TimeMatch" => GameQueue.SoloTimeMatch,
                 "PointsMatch" => GameQueue.SoloPointsMatch,
                 "Solo" => GameQueue.Solo,
                 "Team" => GameQueue.Team,
-                _ => _selectedGameSoloQueue
+                _ => _selectedGameInfo.gameQueue
             };
             
-            Debug.Log(_selectedGameSoloQueue);
+            Debug.Log(_selectedGameInfo);
             //ServerSingleton.Instance.gameQueue = _selectedGameSoloQueue;
-            ClientSingleton.Instance.gameQueue = _selectedGameSoloQueue;
-            HostSingleton.Instance.gameQueue = _selectedGameSoloQueue;
+            ClientSingleton.Instance.gameInfo = _selectedGameInfo;
+            HostSingleton.Instance.gameInfo = _selectedGameInfo;
         }
 
         public async void FindMatchPressed(bool modeParty)
@@ -99,7 +101,7 @@ namespace UI
             
             if(_isBusy) return;
             
-            ClientSingleton.Instance.GameManager.MatchmakerAsync(_selectedGameSoloQueue,  OnMatchMade);
+            ClientSingleton.Instance.GameManager.MatchmakerAsync(_selectedGameInfo,  OnMatchMade);
             
             if (!modeParty)
             {

@@ -10,7 +10,7 @@ using UnityEngine;
         private static ServerSingleton instance;
         public ServerGameManager GameManager { get; private set; }
 
-        public GameQueue gameQueue;
+        public GameInfo gameInfo;
         
         public static ServerSingleton Instance
         {

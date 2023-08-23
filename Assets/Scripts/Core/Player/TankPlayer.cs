@@ -64,6 +64,8 @@ namespace Core.Player
                 
                 Cursor.SetCursor(crossHair, new Vector2(crossHair.width / 2, crossHair.height / 2), CursorMode.Auto);
                 
+                
+                
             }
             
             

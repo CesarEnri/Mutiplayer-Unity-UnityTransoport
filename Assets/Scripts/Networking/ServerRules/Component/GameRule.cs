@@ -1,110 +1,121 @@
 ﻿using System;
 using Core.Player;
-using Networking.Client;
 using Networking.Host;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Networking.ServerRules.Component
 {
     public class GameRule: NetworkBehaviour
     {
-        [SerializeField] private GameRuleDisplay GameRuleDisplay;
-        //public NetworkVariable<GameQueue> gameRulesModeNetworkVariable  = new();
-        
-        public NetworkVariable<int> maxCoinsCollect = new();
-        public NetworkVariable<FixedString32Bytes> nameGameQueueMode = new();
+        public NetworkVariable<int> timeRuleInt = new();
+
+        public NetworkVariable<FixedString32Bytes> gameQueueMode = new();
         
         private const int InitialValueCoins = 1;
         private bool TimeOn;
-        private float TimeLeft = 15;
+        private float TimeLeft = 300;
+        
+        private string _gameQueueMode;
 
-        private string _nameGameQueue ="";
+        public NetworkVariable<bool> gameIsOver = new();
+        
         public override void OnNetworkSpawn()
         {
-            if (IsHost)
+            if (IsServer || IsHost)
             {
-                TimeOn = true;
-                maxCoinsCollect.Value = InitialValueCoins;
+                gameIsOver.Value = false;
+                gameQueueMode.Value = IsHost ? HostSingleton.Instance.gameInfo.gameQueue.ToString()
+                    :ServerSingleton.Instance.gameInfo.gameQueue.ToString();
                 
-                _nameGameQueue = HostSingleton.Instance.gameQueue.ToString();
-                nameGameQueueMode.Value = _nameGameQueue;
-
-                if (_nameGameQueue == "Solo")
-                {
-                    TimeLeft = 40;
-                }
-
-                OnClientConnect();
-
-            }
-
-
-            if (IsServer)
-            {
-                TimeOn = true;
-                maxCoinsCollect.Value = InitialValueCoins;
-                
-                _nameGameQueue = ServerSingleton.Instance.gameQueue.ToString();
-                nameGameQueueMode.Value = _nameGameQueue;
-
-                OnClientConnect();
+                timeRuleInt.Value = InitialValueCoins;
+                HandledServerOnline();
             }
             
             
             if (IsClient)
             {
-                maxCoinsCollect.OnValueChanged += HandleTimeRuleClient;
-                HandleTimeRuleClient(0, maxCoinsCollect.Value);
-                nameGameQueueMode.OnValueChanged += SetModeClient;
-                SetModeClient("", nameGameQueueMode.Value);
+                HandledClientOnline();
             }
 
         }
 
-        private void SetModeClient(FixedString32Bytes previousvalue, FixedString32Bytes newvalue)
+        private void HandledServerOnline()
         {
-            GameRuleDisplay.SetValueGameQueue(previousvalue, newvalue);
-        }
+            _gameQueueMode = gameQueueMode.Value.ToString();
 
-        private void OnClientConnect()
-        {
-            nameGameQueueMode.Value = "";
-            nameGameQueueMode.Value = _nameGameQueue;
-        }
-
-
-        private void HandleTimeRuleClient(int previousvalue, int newvalue)
-        {
-            if (newvalue <= 0)
+            if (gameQueueMode.Value == GameQueue.SoloTimeMatch.ToString())
             {
-                HandleTimeRule();
+                TimeOn = true;
             }
+            
+            //Client invoke when enter.
+            gameQueueMode.Value = "";
+            gameQueueMode.Value = _gameQueueMode;
         }
-        private void Update()
+
+        public Action<GameRule> actionOnClient;
+        
+        private void HandledClientOnline()
         {
-            if (TimeOn)
+
+            if (gameQueueMode.Value == GameQueue.SoloTimeMatch.ToString())
             {
-                if (TimeLeft > 0)
-                {
-                    TimeLeft -= Time.deltaTime;
-                }
-                else
-                {
-                    //Debug.Log("Time is up");
-                    TimeLeft = 0;
-                    TimeOn = false;
-                    HandleTimeRule();
-                }
+                timeRuleInt.OnValueChanged += HandleTimeRuleClient;
+                HandleTimeRuleClient(0, timeRuleInt.Value);
             }
-            if (IsServer || IsHost)
-            {
-                maxCoinsCollect.Value = Convert.ToInt32(TimeLeft);
-            }
+            
+            actionOnClient.Invoke(this);
         }
         
-        private static void HandleTimeRule()
+        private void Update()
+        {
+            if (_gameQueueMode == GameQueue.SoloTimeMatch.ToString())
+            {
+                if(!TimerModeGame()) return;
+                if (IsServer || IsHost)
+                {
+                    timeRuleInt.Value = Convert.ToInt32(TimeLeft);
+                }
+            }
+
+            if (_gameQueueMode == GameQueue.SoloPointsMatch.ToString())
+            {
+                //set value for game
+            }
+            
+            
+            if (_gameQueueMode == GameQueue.SoloDeathMatch.ToString())
+            {
+                //set value for game
+            }
+        }
+
+        private bool TimerModeGame()
+        {
+            if (!TimeOn) return TimeOn;
+            
+            if (TimeLeft > 0)
+                TimeLeft -= Time.deltaTime;
+            else
+            {
+                TimeLeft = 0;
+                TimeOn = false;
+                FinishTimeRule();
+            }
+
+            return TimeOn;
+        }
+        
+        private void HandleTimeRuleClient(int previousvalue, int newvalue)
+        {
+            if (newvalue > 0) return;
+            FinishTimeRule();
+        }
+
+        private void FinishTimeRule()
         {
             var players = FindObjectsByType<TankPlayer>(FindObjectsSortMode.None);
             foreach (var player in players)
@@ -112,7 +123,8 @@ namespace Networking.ServerRules.Component
                 player.TryGetComponent(out PlayerMovement playerMovementScript);
                 playerMovementScript.HandleMovementPlayer(false);
             }
-        }
 
+            gameIsOver.Value = true;
+        }
     }
 }

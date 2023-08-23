@@ -1,5 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Networking.Host
 {
@@ -8,7 +9,7 @@ namespace Networking.Host
         private static HostSingleton instance;
         public HostGameManager HostGameManager { get; private set; }
 
-        public GameQueue gameQueue;
+        public GameInfo gameInfo;
         public static HostSingleton Instance
         {
             get
