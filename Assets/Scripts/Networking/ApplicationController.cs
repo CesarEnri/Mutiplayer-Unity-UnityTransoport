@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Networking.Client;
 using Networking.Host;
-using Networking.Server;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,7 +31,7 @@ namespace Networking
         {
             if (isDedicatedServer)
             {
-                Application.targetFrameRate = 30;
+                Application.targetFrameRate = 60;
                 
                 _applicationData = new ApplicationData();
                 var serverSingleton = Instantiate(serverPrefab);

@@ -3,10 +3,8 @@ using Cinemachine;
 using Core.Coins;
 using Core.Combat;
 using Networking.Host;
-using Networking.Server;
 using Unity.Collections;
 using Unity.Netcode;
-using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 
 namespace Core.Player
@@ -35,6 +33,8 @@ namespace Core.Player
         public static event Action<TankPlayer> OnPlayerSpawned;
         public static event Action<TankPlayer> OnPlayerDespawned;
 
+        public UserData userDataInformation;
+
         public override void OnNetworkSpawn()
         {
             if (IsServer)
@@ -53,6 +53,8 @@ namespace Core.Player
                 TeamIndex.Value = userData.teamIndex;
                 
                 OnPlayerSpawned?.Invoke(this);
+
+                userDataInformation = userData;
             }
 
             if (IsOwner)
@@ -63,6 +65,8 @@ namespace Core.Player
                 Cursor.SetCursor(crossHair, new Vector2(crossHair.width / 2, crossHair.height / 2), CursorMode.Auto);
                 
             }
+            
+            
         }
 
 

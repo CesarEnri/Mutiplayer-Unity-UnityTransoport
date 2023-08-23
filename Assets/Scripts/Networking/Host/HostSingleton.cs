@@ -8,6 +8,7 @@ namespace Networking.Host
         private static HostSingleton instance;
         public HostGameManager HostGameManager { get; private set; }
 
+        public GameQueue gameQueue;
         public static HostSingleton Instance
         {
             get

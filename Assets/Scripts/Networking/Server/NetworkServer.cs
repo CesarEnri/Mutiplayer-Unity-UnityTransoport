@@ -6,8 +6,6 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
-namespace Networking.Server
-{
     public class NetworkServer: IDisposable
     {
         private NetworkManager _networkManager;
@@ -110,5 +108,5 @@ namespace Networking.Server
                 _networkManager.Shutdown();
             }
         }
-    }
+    
 }

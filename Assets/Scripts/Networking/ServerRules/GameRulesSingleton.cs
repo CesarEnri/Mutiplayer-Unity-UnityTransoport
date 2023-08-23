@@ -34,10 +34,10 @@ namespace Networking.Rules
             DontDestroyOnLoad(gameObject);
         }
 
-        public async Task CreateRules()
-        {
+        //public async Task CreateRules()
+        //{
             //set rules
-        }
+        //}
 
         private void OnDestroy()
         {

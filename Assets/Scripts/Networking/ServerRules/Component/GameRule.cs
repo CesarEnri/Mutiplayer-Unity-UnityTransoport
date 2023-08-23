@@ -1,35 +1,80 @@
 ﻿using System;
 using Core.Player;
-using Core.Rules;
+using Networking.Client;
+using Networking.Host;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Networking.Rules.Component
+namespace Networking.ServerRules.Component
 {
     public class GameRule: NetworkBehaviour
     {
-        public NetworkVariable<GameRulesMode> gameRulesModeNetworkVariable  = new();
+        [SerializeField] private GameRuleDisplay GameRuleDisplay;
+        //public NetworkVariable<GameQueue> gameRulesModeNetworkVariable  = new();
         
         public NetworkVariable<int> maxCoinsCollect = new();
+        public NetworkVariable<FixedString32Bytes> nameGameQueueMode = new();
         
         private const int InitialValueCoins = 1;
         private bool TimeOn;
         private float TimeLeft = 15;
 
+        private string _nameGameQueue ="";
         public override void OnNetworkSpawn()
         {
-            if (IsServer || IsHost)
+            if (IsHost)
             {
                 TimeOn = true;
                 maxCoinsCollect.Value = InitialValueCoins;
+                
+                _nameGameQueue = HostSingleton.Instance.gameQueue.ToString();
+                nameGameQueueMode.Value = _nameGameQueue;
+
+                if (_nameGameQueue == "Solo")
+                {
+                    TimeLeft = 40;
+                }
+
+                OnClientConnect();
+
             }
-            else
+
+
+            if (IsServer)
+            {
+                TimeOn = true;
+                maxCoinsCollect.Value = InitialValueCoins;
+                
+                _nameGameQueue = ServerSingleton.Instance.gameQueue.ToString();
+                nameGameQueueMode.Value = _nameGameQueue;
+
+                OnClientConnect();
+            }
+            
+            
+            if (IsClient)
             {
                 maxCoinsCollect.OnValueChanged += HandleTimeRuleClient;
+                HandleTimeRuleClient(0, maxCoinsCollect.Value);
+                nameGameQueueMode.OnValueChanged += SetModeClient;
+                SetModeClient("", nameGameQueueMode.Value);
             }
+
         }
-        
+
+        private void SetModeClient(FixedString32Bytes previousvalue, FixedString32Bytes newvalue)
+        {
+            GameRuleDisplay.SetValueGameQueue(previousvalue, newvalue);
+        }
+
+        private void OnClientConnect()
+        {
+            nameGameQueueMode.Value = "";
+            nameGameQueueMode.Value = _nameGameQueue;
+        }
+
+
         private void HandleTimeRuleClient(int previousvalue, int newvalue)
         {
             if (newvalue <= 0)
@@ -55,7 +100,7 @@ namespace Networking.Rules.Component
             }
             if (IsServer || IsHost)
             {
-                maxCoinsCollect.Value = Convert.ToInt32(TimeLeft);    
+                maxCoinsCollect.Value = Convert.ToInt32(TimeLeft);
             }
         }
         

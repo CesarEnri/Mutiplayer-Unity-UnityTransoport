@@ -1,6 +1,8 @@
 ﻿using System;
 using Networking.Client;
+
 using Networking.Host;
+
 using TMPro;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -45,8 +47,30 @@ namespace UI
             {
                 _timeInQueue += Time.deltaTime;
                 var  ts = TimeSpan.FromSeconds(_timeInQueue);
-                queueTimerText.text = string.Format("{0:0}:{1:00}", ts.Minutes, ts.Seconds);
+                queueTimerText.text = $"{ts.Minutes:0}:{ts.Seconds:00}";
             }
+        }
+
+        private GameQueue _selectedGameSoloQueue;
+
+        [SerializeField] private TMP_Dropdown gameQueueMode;
+        
+        public void ValidateGameQueueSelected()
+        {
+            _selectedGameSoloQueue = gameQueueMode.options[gameQueueMode.value].text switch
+            {
+                "DeathMatch" => GameQueue.SoloDeathMatch,
+                "TimeMatch" => GameQueue.SoloTimeMatch,
+                "PointsMatch" => GameQueue.SoloPointsMatch,
+                "Solo" => GameQueue.Solo,
+                "Team" => GameQueue.Team,
+                _ => _selectedGameSoloQueue
+            };
+            
+            Debug.Log(_selectedGameSoloQueue);
+            //ServerSingleton.Instance.gameQueue = _selectedGameSoloQueue;
+            ClientSingleton.Instance.gameQueue = _selectedGameSoloQueue;
+            HostSingleton.Instance.gameQueue = _selectedGameSoloQueue;
         }
 
         public async void FindMatchPressed(bool modeParty)
@@ -75,7 +99,7 @@ namespace UI
             
             if(_isBusy) return;
             
-            ClientSingleton.Instance.GameManager.MatchmakerAsync(modeParty,  OnMatchMade);
+            ClientSingleton.Instance.GameManager.MatchmakerAsync(_selectedGameSoloQueue,  OnMatchMade);
             
             if (!modeParty)
             {
@@ -111,7 +135,7 @@ namespace UI
                     queueStatusText.text = "TicketRetrievalError";
                     break;
                 case MatchmakerPollingResult.MatchAssignmentError:
-                    queueStatusText.text = "MatchAssignmentError";
+                    queueStatusText.text = "MatchAssignmentError"; //Error generado por una mala configuracion en el servicio
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);

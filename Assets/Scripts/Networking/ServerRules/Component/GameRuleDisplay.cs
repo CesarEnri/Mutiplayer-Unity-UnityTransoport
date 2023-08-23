@@ -1,17 +1,26 @@
 ﻿using TMPro;
+using Unity.Collections;
 using UnityEngine;
 
-namespace Networking.Rules.Component
+namespace Networking.ServerRules.Component
 {
     public class GameRuleDisplay : MonoBehaviour
     {
+        [SerializeField] private TMP_Text modeGameQueue;
         [SerializeField] private TMP_Text maxCoinsDisplay;
 
         [SerializeField] private GameRule gameRule;
         
-        private void Start()
+        private void Awake()
         {
+            modeGameQueue.text = gameRule.nameGameQueueMode.Value.Value;
             gameRule.maxCoinsCollect.OnValueChanged += ValueMaxCoinUpdate;
+            gameRule.nameGameQueueMode.OnValueChanged += SetValueGameQueue;
+        }
+
+        public void SetValueGameQueue(FixedString32Bytes previousvalue, FixedString32Bytes newvalue)
+        {
+            modeGameQueue.text = newvalue.ToString();
         }
 
         private void ValueMaxCoinUpdate(int previousvalue, int newvalue)
@@ -23,25 +32,7 @@ namespace Networking.Rules.Component
         {
             gameRule.maxCoinsCollect.OnValueChanged -= ValueMaxCoinUpdate;
         }
-
-        // [SerializeField] private TMP_Text maxCoinsDisplay;
-        //
-        //
-        // public float TimeGame { get; private set; }
-        // public float MaxCoins { get; private set; }
-        //
-        // public void Initialise(float timeGame, int maxCoins)
-        // {
-        //     TimeGame = timeGame;
-        //     MaxCoins = maxCoins;
-        // }
-        //
-        // private void UpdateText()
-        // {
-        //     timeDisplay.text = TimeGame.ToString(CultureInfo.InvariantCulture);
-        //     maxCoinsDisplay.text = MaxCoins.ToString(CultureInfo.InvariantCulture);
-        // }
-
+        
 
     }
 }

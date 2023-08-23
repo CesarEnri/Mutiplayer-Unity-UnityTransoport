@@ -1,15 +1,17 @@
 ﻿using System.Threading.Tasks;
+using Networking.Server;
 using Unity.Netcode;
 using Unity.Services.Core;
 using UnityEngine;
 
-namespace Networking.Server
-{
+
     public class ServerSingleton : MonoBehaviour
     {
         private static ServerSingleton instance;
         public ServerGameManager GameManager { get; private set; }
 
+        public GameQueue gameQueue;
+        
         public static ServerSingleton Instance
         {
             get
@@ -51,4 +53,4 @@ namespace Networking.Server
             GameManager?.Dispose();
         }
     }
-}
+

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Networking.Client
@@ -10,6 +9,8 @@ namespace Networking.Client
 
         public ClientGameManager GameManager { get; private set; }
 
+        public GameQueue gameQueue;
+        
         public static ClientSingleton Instance
         {
             get
