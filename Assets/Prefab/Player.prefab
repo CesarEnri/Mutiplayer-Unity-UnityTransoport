@@ -10742,7 +10742,6 @@ MonoBehaviour:
   <MaxHealth>k__BackingField: 100
   currentHealth:
     m_InternalValue: 0
-  respawnHandler: {fileID: 0}
 --- !u!114 &7801414447912968744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10832,7 +10831,6 @@ MonoBehaviour:
       map: 0
       gameMode: 0
       gameQueue: 0
-  killer: {fileID: 0}
 --- !u!114 &536754965374611192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10845,6 +10843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d15104e63d6c4efc8225c6d58da38462, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pointsForKill: 5
   health: {fileID: 3353815537333174024}
   totalKills:
     m_InternalValue: 0

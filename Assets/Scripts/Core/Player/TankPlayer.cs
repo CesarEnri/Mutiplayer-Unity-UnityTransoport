@@ -36,9 +36,7 @@ namespace Core.Player
         public static event Action<TankPlayer> OnPlayerDespawned;
 
         public UserData userDataInformation;
-
-        public TankPlayer killer;
-
+        
         public override void OnNetworkSpawn()
         {
             if (IsServer)
@@ -59,11 +57,6 @@ namespace Core.Player
                 OnPlayerSpawned?.Invoke(this);
 
                 userDataInformation = userData;
-
-                if (killer != null)
-                {
-                    killer.KillTrunk.totalKills.Value += 1;
-                }
             }
 
             if (IsOwner)
@@ -72,9 +65,6 @@ namespace Core.Player
                 minimapIconRender.color = ownerColour;
                 
                 Cursor.SetCursor(crossHair, new Vector2(crossHair.width / 2, crossHair.height / 2), CursorMode.Auto);
-                
-                
-                
             }
             
             

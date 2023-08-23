@@ -118,7 +118,6 @@ namespace Core.Player
             
             if (projectile.TryGetComponent(out Projectile pj))
             {
-                Debug.Log(pj);
                 pj.tankPlayer = player;
             }
 
@@ -158,7 +157,6 @@ namespace Core.Player
             
             if (projectile.TryGetComponent(out Projectile pj))
             {
-                Debug.Log(pj);
                 pj.tankPlayer = player;
             }
             

@@ -59,9 +59,12 @@ namespace UI.Leaderboard
                         Value = entity
                     });
                 }
+                
+                
+                
             }
 
-            if (IsServer)
+            if (IsServer || IsHost)
             {
                 TankPlayer[] players = FindObjectsByType<TankPlayer>(FindObjectsSortMode.None);
                 foreach (TankPlayer player in players)
@@ -128,6 +131,7 @@ namespace UI.Leaderboard
                     if (displayToUpdate != null)
                     {
                         displayToUpdate.UpdateCoins(changeEvent.Value.Coins);
+                        displayToUpdate.UpdateKill(changeEvent.Value.Kill);
                     }
                     break;
             }
@@ -192,10 +196,10 @@ namespace UI.Leaderboard
             });
 
             player.Wallet.totalCoins.OnValueChanged += (oldCoins, newCoins) =>
-                HandleCoinsChanged(player.OwnerClientId, newCoins);
+                HandleCoinsChanged(player.OwnerClientId, newCoins, player);
             
-            player.KillTrunk.totalKills.OnValueChanged -=(oldKills, newKills) => 
-                HandleKillChanged(player.OwnerClientId, newKills);
+            player.KillTrunk.totalKills.OnValueChanged +=(oldKills, newKills) => 
+                HandleKillChanged(player.OwnerClientId, newKills, player);
         }
 
         private void HandlePlayerDespawned(TankPlayer player)
@@ -209,13 +213,13 @@ namespace UI.Leaderboard
             }
 
             player.Wallet.totalCoins.OnValueChanged -= (oldCoins, newCoins) =>
-                HandleCoinsChanged(player.OwnerClientId, newCoins);
+                HandleCoinsChanged(player.OwnerClientId, newCoins, player);
             
             player.KillTrunk.totalKills.OnValueChanged -=(oldKills, newKills) => 
-                HandleKillChanged(player.OwnerClientId, newKills);
+                HandleKillChanged(player.OwnerClientId, newKills, player);
         }
 
-        private void HandleCoinsChanged(ulong clientId, int newCoins)
+        private void HandleCoinsChanged(ulong clientId, int newCoins, TankPlayer playerInfo)
         {
             for (int i = 0; i < leaderboardEntities.Count; i++)
             {
@@ -227,14 +231,16 @@ namespace UI.Leaderboard
                     PlayerName = leaderboardEntities[i].PlayerName,
                     TeamIndex = leaderboardEntities[i].TeamIndex,
                     Coins = newCoins,
+                    Kill = playerInfo.KillTrunk.totalKills.Value
                 };
 
                 return;
             }
         }
 
-        private void HandleKillChanged(ulong clientId, int newKills)
+        private void HandleKillChanged(ulong clientId, int newKills,  TankPlayer playerInfo)
         {
+            
             for (int i = 0; i < leaderboardEntities.Count; i++)
             {
                 if (leaderboardEntities[i].ClientId != clientId) { continue; }
@@ -244,6 +250,7 @@ namespace UI.Leaderboard
                     ClientId = leaderboardEntities[i].ClientId,
                     PlayerName = leaderboardEntities[i].PlayerName,
                     TeamIndex = leaderboardEntities[i].TeamIndex,
+                    Coins = playerInfo.Wallet.totalCoins.Value,
                     Kill = newKills
                 };
 

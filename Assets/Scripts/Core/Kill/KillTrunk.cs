@@ -1,5 +1,4 @@
-﻿using Core.Coins;
-using Core.Combat;
+﻿using Core.Combat;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,27 +6,36 @@ namespace Core.Kill
 {
     public class KillTrunk: NetworkBehaviour
     {
+        [SerializeField] private int pointsForKill = 5;
+        
         [SerializeField] private Health health;
         
-        public NetworkVariable<int> totalKills;
-        
-        
+        public NetworkVariable<int> totalKills = new();
+
+
+        public override void OnNetworkSpawn()
+        {
+            if (IsServer || IsHost)
+            {
+                totalKills.Value = 0;
+            }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            
+        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if(!other.TryGetComponent(out Projectile projectile))
                 return;
-
-            Debug.Log("WEO");
-            Debug.Log(health.currentHealth.Value);
-            if (health.currentHealth.Value <= 100)
+            
+            if (health.currentHealth.Value <= 0)
             {
-                Debug.Log("sin");
-
                 if (IsServer || IsHost)
                 {
-                    Debug.Log("vida");
-
-                    projectile.tankPlayer.KillTrunk.totalKills.Value += 1;    
+                    projectile.tankPlayer.KillTrunk.totalKills.Value += pointsForKill;
                 }
 
             }

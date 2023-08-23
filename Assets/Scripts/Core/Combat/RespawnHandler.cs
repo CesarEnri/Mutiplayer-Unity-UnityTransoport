@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Core.Player;
 using Unity.Mathematics;
 using Unity.Netcode;
@@ -48,13 +49,14 @@ namespace Core.Combat
         private void HandlePlayerDie(TankPlayer player)
         {
             var keptCoins = (int)(player.Wallet.totalCoins.Value * (keptCoinPercentage / 100));
+            var keptKill = player.KillTrunk.totalKills.Value;
             
             Destroy(player.gameObject);
 
-            StartCoroutine(RespawnPlayer(player.OwnerClientId, keptCoins));
+            StartCoroutine(RespawnPlayer(player.OwnerClientId, keptCoins, keptKill));
         }
 
-        private IEnumerator RespawnPlayer(ulong ownerClientId, int keptCoins)
+        private IEnumerator RespawnPlayer(ulong ownerClientId, int keptCoins, int keptKill)
         {
             yield return null;
 
@@ -65,7 +67,7 @@ namespace Core.Combat
             
             playerInstance.Wallet.totalCoins.Value += keptCoins;
 
-            playerInstance.killer = killer;
+            playerInstance.KillTrunk.totalKills.Value = keptKill;
         }
     }
 

@@ -47,9 +47,9 @@ namespace UI.Leaderboard
             UpdateText();
         }
 
-        private void UpdateKill(int kill)
+        public void UpdateKill(int kill)
         {
-            Kill = Coins;
+            Kill = kill;
 
             UpdateText();
         }
