@@ -1,4 +1,5 @@
 using System;
+using Core.Player;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -47,6 +48,7 @@ namespace Core.Combat
                 Debug.Log("You are dead!");
                 OnDie?.Invoke(this);
                 isDead = true;
+                
             }
         }
     }

@@ -4,12 +4,14 @@ using Unity.Netcode;
 
 namespace UI.Leaderboard
 {
-    public struct LeaderboardEntityStateCoin : INetworkSerializable, IEquatable<LeaderboardEntityStateCoin>
+    public struct LeaderboardEntityState : INetworkSerializable, IEquatable<LeaderboardEntityState>
     {
         public ulong ClientId;
         public int TeamIndex;
         public FixedString32Bytes PlayerName;
         public int Coins;
+        public int Kill;
+        public int AssistantKill;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -17,14 +19,18 @@ namespace UI.Leaderboard
             serializer.SerializeValue(ref TeamIndex);
             serializer.SerializeValue(ref PlayerName);
             serializer.SerializeValue(ref Coins);
+            serializer.SerializeValue(ref Kill);
+            serializer.SerializeValue(ref AssistantKill);
         }
 
-        public bool Equals(LeaderboardEntityStateCoin other)
+        public bool Equals(LeaderboardEntityState other)
         {
             return ClientId == other.ClientId &&
                    TeamIndex == other.TeamIndex &&
                    PlayerName.Equals(other.PlayerName) &&
-                   Coins == other.Coins;
+                   Coins == other.Coins &&
+                   Kill == other.Kill &&
+                   AssistantKill == other.AssistantKill;
         }
     }
 }

@@ -11,6 +11,8 @@ namespace Core.Combat
         [SerializeField] private TankPlayer playerPrefab;
         [SerializeField] private float keptCoinPercentage;
 
+        public TankPlayer killer;
+
         public override void OnNetworkSpawn()
         {
             if (!IsServer) { return; }
@@ -62,6 +64,8 @@ namespace Core.Combat
             playerInstance.NetworkObject.SpawnAsPlayerObject(ownerClientId);
             
             playerInstance.Wallet.totalCoins.Value += keptCoins;
+
+            playerInstance.killer = killer;
         }
     }
 

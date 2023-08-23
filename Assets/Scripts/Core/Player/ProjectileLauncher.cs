@@ -1,10 +1,8 @@
-using System;
 using Core.Coins;
 using Core.Combat;
 using Input;
 using Unity.Mathematics;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -118,6 +116,13 @@ namespace Core.Player
                 rb.velocity = rb.transform.up * projectileSpeed;
             }
             
+            if (projectile.TryGetComponent(out Projectile pj))
+            {
+                Debug.Log(pj);
+                pj.tankPlayer = player;
+            }
+
+            
             SpawnDummyProjectileClientRpc(spawnPos, direction, player.TeamIndex.Value);
         }
         
@@ -150,6 +155,13 @@ namespace Core.Player
             {
                 rb.velocity = rb.transform.up * projectileSpeed;
             }
+            
+            if (projectile.TryGetComponent(out Projectile pj))
+            {
+                Debug.Log(pj);
+                pj.tankPlayer = player;
+            }
+            
         }
 
     }

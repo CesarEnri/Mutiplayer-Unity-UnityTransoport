@@ -2,6 +2,7 @@ using System;
 using Cinemachine;
 using Core.Coins;
 using Core.Combat;
+using Core.Kill;
 using Networking.Host;
 using Unity.Collections;
 using Unity.Netcode;
@@ -19,6 +20,7 @@ namespace Core.Player
         
         [field: SerializeField] public Health Health { get; private set; }
         [field: SerializeField] public CoinWallet Wallet { get; private set; }
+        [field: SerializeField] public KillTrunk KillTrunk { get; private set; }
 
         [Header("Settings")]
         [SerializeField] private int ownerPriority = 15;
@@ -34,6 +36,8 @@ namespace Core.Player
         public static event Action<TankPlayer> OnPlayerDespawned;
 
         public UserData userDataInformation;
+
+        public TankPlayer killer;
 
         public override void OnNetworkSpawn()
         {
@@ -55,6 +59,11 @@ namespace Core.Player
                 OnPlayerSpawned?.Invoke(this);
 
                 userDataInformation = userData;
+
+                if (killer != null)
+                {
+                    killer.KillTrunk.totalKills.Value += 1;
+                }
             }
 
             if (IsOwner)
