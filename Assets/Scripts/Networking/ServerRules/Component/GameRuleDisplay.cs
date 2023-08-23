@@ -11,7 +11,7 @@ namespace Networking.Rules.Component
         
         private void Start()
         {
-            gameRule.MaxCoinsCollect.OnValueChanged += ValueMaxCoinUpdate;
+            gameRule.maxCoinsCollect.OnValueChanged += ValueMaxCoinUpdate;
         }
 
         private void ValueMaxCoinUpdate(int previousvalue, int newvalue)
@@ -21,7 +21,7 @@ namespace Networking.Rules.Component
 
         private void OnDestroy()
         {
-            gameRule.MaxCoinsCollect.OnValueChanged -= ValueMaxCoinUpdate;
+            gameRule.maxCoinsCollect.OnValueChanged -= ValueMaxCoinUpdate;
         }
 
         // [SerializeField] private TMP_Text maxCoinsDisplay;

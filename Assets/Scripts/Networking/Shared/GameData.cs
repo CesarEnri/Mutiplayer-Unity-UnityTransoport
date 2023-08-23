@@ -13,7 +13,10 @@ public enum GameMode
 public enum GameQueue
 {
     Solo,
-    Team
+    Team,
+    SoloDeathMatch,
+    SoloTimeMatch,
+    SoloPointsMatch
 }
 
 [Serializable]
@@ -39,6 +42,9 @@ public class GameInfo
         {
             GameQueue.Solo => "solo-queue",
             GameQueue.Team => "team-queue",
+            GameQueue.SoloDeathMatch => "solo-queue-deathmatch",
+            GameQueue.SoloTimeMatch => "solo-queue-time-match",
+            GameQueue.SoloPointsMatch=>"solo-queue-points-match",
             _ => "solo-queue"
         };
     }

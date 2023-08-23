@@ -1,13 +1,17 @@
 ﻿using System;
 using Core.Player;
+using Core.Rules;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Networking.Rules.Component
 {
     public class GameRule: NetworkBehaviour
     {
-        public NetworkVariable<int> MaxCoinsCollect = new();
+        public NetworkVariable<GameRulesMode> gameRulesModeNetworkVariable  = new();
+        
+        public NetworkVariable<int> maxCoinsCollect = new();
         
         private const int InitialValueCoins = 1;
         private bool TimeOn;
@@ -18,11 +22,11 @@ namespace Networking.Rules.Component
             if (IsServer || IsHost)
             {
                 TimeOn = true;
-                MaxCoinsCollect.Value = InitialValueCoins;
+                maxCoinsCollect.Value = InitialValueCoins;
             }
             else
             {
-                MaxCoinsCollect.OnValueChanged += HandleTimeRuleClient;
+                maxCoinsCollect.OnValueChanged += HandleTimeRuleClient;
             }
         }
         
@@ -51,7 +55,7 @@ namespace Networking.Rules.Component
             }
             if (IsServer || IsHost)
             {
-                MaxCoinsCollect.Value = Convert.ToInt32(TimeLeft);    
+                maxCoinsCollect.Value = Convert.ToInt32(TimeLeft);    
             }
         }
         

@@ -33,7 +33,7 @@ namespace Networking
         {
             if (isDedicatedServer)
             {
-                Application.targetFrameRate = 60;
+                Application.targetFrameRate = 30;
                 
                 _applicationData = new ApplicationData();
                 var serverSingleton = Instantiate(serverPrefab);
