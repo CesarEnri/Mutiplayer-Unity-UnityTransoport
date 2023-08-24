@@ -4885,13 +4885,13 @@ ParticleSystemRenderer:
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_UseCustomVertexStreams: 0
+  m_UseCustomVertexStreams: 1
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
-  m_VertexStreams: 00010304
+  m_VertexStreams: 000304
   m_Mesh: {fileID: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
@@ -10216,13 +10216,13 @@ ParticleSystemRenderer:
   m_RenderAlignment: 0
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_UseCustomVertexStreams: 0
+  m_UseCustomVertexStreams: 1
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
-  m_VertexStreams: 00010304
+  m_VertexStreams: 000304
   m_Mesh: {fileID: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
@@ -10654,6 +10654,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a00a5f15cbf529a43b5f97abf2a52828, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAiming: {fileID: 7088936558712285098}
+  projectileLauncher: {fileID: 8095312215243283359}
   inputReader: {fileID: 11400000, guid: 2548ceeb8ca140146b2a850095f94bc4, type: 2}
   bodyTransform: {fileID: 3657843929626853426}
   rb: {fileID: 3475542554023159533}
@@ -10703,6 +10705,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputReader: {fileID: 11400000, guid: 2548ceeb8ca140146b2a850095f94bc4, type: 2}
   turretTransform: {fileID: 4286255368881031017}
+  canAiming: 1
 --- !u!114 &8095312215243283359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10727,6 +10730,7 @@ MonoBehaviour:
   fireRate: 0.75
   muzzleFlashDuration: 0.075
   costToFire: 5
+  canShoot: 1
 --- !u!114 &3353815537333174024
 MonoBehaviour:
   m_ObjectHideFlags: 0

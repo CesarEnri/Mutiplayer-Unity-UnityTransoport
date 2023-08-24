@@ -1,5 +1,6 @@
 ﻿using System;
 using TMPro;
+using UI;
 using UnityEngine;
 
 namespace Networking.ServerRules.Component

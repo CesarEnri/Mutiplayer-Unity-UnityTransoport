@@ -32,6 +32,8 @@ namespace Core.Player
 
         private float _muzzleFlashTimer;
 
+        public bool canShoot = true;
+
         public override void OnNetworkSpawn()
         {
             if (!IsOwner) return;
@@ -48,6 +50,7 @@ namespace Core.Player
 
         private void HandlePrimaryFire(bool shouldFire)
         {
+            if(!canShoot) return;
             if (_shouldFire)
             {
                 if(_isPointOverUi) return;
@@ -58,7 +61,7 @@ namespace Core.Player
 
         private void Update()
         {
-            
+            if(!canShoot) return;
             if (_muzzleFlashTimer > 0f)
             {
                 _muzzleFlashTimer -= Time.deltaTime;

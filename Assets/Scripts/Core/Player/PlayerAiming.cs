@@ -9,10 +9,15 @@ namespace Core.Player
     {
         [SerializeField] private InputReader inputReader;
         [SerializeField] private Transform turretTransform;
+
+        public bool canAiming = true;
         
         private void LateUpdate()
         {
             if(!IsOwner) return;
+            
+            if(!canAiming)
+                return;
             
             var aimScreenPosition = new Vector2();
             #if UNITY_ANDROID && !UNITY_EDITOR

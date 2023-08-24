@@ -9,7 +9,9 @@ namespace Core.Player
 {
     public class PlayerMovement : NetworkBehaviour
     {
-        [Header("References")]        
+        [Header("References")]
+        [SerializeField]private PlayerAiming playerAiming;
+        [SerializeField]private ProjectileLauncher projectileLauncher;
         [SerializeField] private InputReader inputReader;
         [SerializeField] private Transform bodyTransform;
         [SerializeField] private Rigidbody2D rb;
@@ -106,6 +108,8 @@ namespace Core.Player
                 canMove = false;
                 rb.velocity = Vector2.zero;
                 rb.Sleep();
+                playerAiming.canAiming = false;
+                projectileLauncher.canShoot = false;
             }
         }
     }
