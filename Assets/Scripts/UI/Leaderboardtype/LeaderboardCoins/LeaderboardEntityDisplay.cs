@@ -1,14 +1,15 @@
 ﻿using TMPro;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace UI.Leaderboard
+namespace UI.Leaderboardtype.LeaderboardCoins
 {
     public class LeaderboardEntityDisplay : MonoBehaviour
     {
         [SerializeField] private TMP_Text displayText;
-
-        private FixedString32Bytes _displayName;
+        
+        public FixedString32Bytes displayName { get; private set; }
 
         public int TeamIndex { get; private set; }
         public ulong ClientId { get; private set; }
@@ -20,7 +21,7 @@ namespace UI.Leaderboard
         public void Initialise(ulong clientId, FixedString32Bytes displayName, int coins, int kill)
         {
             ClientId = clientId;
-            _displayName = displayName;
+            this.displayName = displayName;
 
             UpdateCoins(coins);
             UpdateKill(kill);
@@ -29,7 +30,7 @@ namespace UI.Leaderboard
         public void Initialise(int teamIndex, FixedString32Bytes displayName, int coins, int kill)
         {
             TeamIndex = teamIndex;
-            _displayName = displayName;
+            this.displayName = displayName;
 
             UpdateCoins(coins);
             UpdateKill(kill);
@@ -56,7 +57,7 @@ namespace UI.Leaderboard
 
         public void UpdateText()
         {
-            displayText.text = $"{transform.GetSiblingIndex() + 1}. {_displayName} ({Coins}) -- {Kill}";
+            displayText.text = $"{transform.GetSiblingIndex() + 1}. {displayName} ({Coins}) -- {Kill}";
         }
     }  
 }

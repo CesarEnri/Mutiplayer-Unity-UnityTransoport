@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Player;
 using Networking.Client;
+using UI.Leaderboard;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace UI.Leaderboard
+namespace UI.Leaderboardtype.LeaderboardCoins
 {
     public class Leaderboard : NetworkBehaviour
     {
@@ -256,6 +257,19 @@ namespace UI.Leaderboard
 
                 return;
             }
+        }
+
+        public List<string> GetFinallyScore()
+        {
+            var listPlayers = new List<string>();
+            for (int i = 0; i < 2; i++)
+            {
+                if (entityDisplays[i].displayName =="")
+                    return listPlayers; 
+                listPlayers.Add(entityDisplays[i].displayName.Value + " - "  +entityDisplays[i].Coins);
+            }
+            
+            return listPlayers;
         }
     }
 }

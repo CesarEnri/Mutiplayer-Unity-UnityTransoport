@@ -67,14 +67,13 @@ namespace Core.Player
                 Cursor.SetCursor(crossHair, new Vector2(crossHair.width / 2, crossHair.height / 2), CursorMode.Auto);
             }
             
-            
         }
 
 
-        public void HandlePlayerMovement(bool canMove)
-        {
-            playerMovement.HandleMovementPlayer(canMove);
-        }
+        // public void HandlePlayerMovement(bool canMove)
+        // {
+        //     playerMovement.HandleMovementPlayer(canMove);
+        // }
 
         public override void OnNetworkDespawn()
         {

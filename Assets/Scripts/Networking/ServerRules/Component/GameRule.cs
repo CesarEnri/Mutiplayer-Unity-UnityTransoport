@@ -5,7 +5,7 @@ using UI;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
+using Leaderboard = UI.Leaderboardtype.LeaderboardCoins.Leaderboard;
 
 namespace Networking.ServerRules.Component
 {
@@ -17,23 +17,24 @@ namespace Networking.ServerRules.Component
 
         public NetworkVariable<FixedString32Bytes> gameQueueMode = new();
         
-        private const int InitialValueCoins = 1;
+        //private const int InitialValueCoins = 1;
         private bool TimeOn;
-        private float TimeLeft = 25;
+        private float TimeLeft = 300;
         
         private string _gameQueueMode;
 
-        //public NetworkVariable<bool> gameIsOver = new();
-        //      gameIsOver.Value = true;
+        [SerializeField] private Leaderboard leaderboard;
         public override void OnNetworkSpawn()
         {
+            
             if (IsServer || IsHost)
             {
+                TimeOn = true;
                 //gameIsOver.Value = false;
                 gameQueueMode.Value = IsHost ? HostSingleton.Instance.gameInfo.gameQueue.ToString()
                     :ServerSingleton.Instance.gameInfo.gameQueue.ToString();
                 
-                timeRuleInt.Value = InitialValueCoins;
+                timeRuleInt.Value = (int)TimeLeft;
                 HandledServerOnline();
             }
             
@@ -125,6 +126,26 @@ namespace Networking.ServerRules.Component
             {
                 player.TryGetComponent(out PlayerMovement playerMovementScript);
                 playerMovementScript.HandleMovementPlayer(false);
+            }
+
+            var results = leaderboard.GetFinallyScore();
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (i == 0)
+                {
+                    gameRuleHUD.firstPlace.text = results[i];
+                }
+
+                if (i == 1)
+                {
+                    gameRuleHUD.secondPlace.text = results[i];
+                }
+
+                if (i == 2)
+                {
+                    gameRuleHUD.thirdPlace.text = results[i];
+                }
             }
             
             Debug.Log("End Game!");

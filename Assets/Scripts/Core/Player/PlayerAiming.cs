@@ -16,8 +16,7 @@ namespace Core.Player
         {
             if(!IsOwner) return;
             
-            if(!canAiming)
-                return;
+            //if(!canAiming)return;
             
             var aimScreenPosition = new Vector2();
             #if UNITY_ANDROID && !UNITY_EDITOR
