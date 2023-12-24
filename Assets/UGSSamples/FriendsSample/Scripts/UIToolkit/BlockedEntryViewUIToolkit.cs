@@ -1,8 +1,7 @@
 using System;
-using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Unity.Services.Samples.Friends.UIToolkit
+namespace UGSSamples.FriendsSample.Scripts.UIToolkit
 {
     public class BlockedEntryViewUIToolkit
     {

@@ -56,6 +56,7 @@ namespace Unity.Services.Samples.Friends.UIToolkit
                     onBlock?.Invoke(friendData.Id);
                     friendControl.Hide();
                 };
+                
             };
             m_FriendListView.itemsSource = friendEntryDatas;
             Refresh();

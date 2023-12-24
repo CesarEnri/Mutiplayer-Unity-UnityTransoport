@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UGSSamples.FriendsSample.Scripts.UIToolkit;
 using UnityEngine.UIElements;
 
 namespace Unity.Services.Samples.Friends.UIToolkit

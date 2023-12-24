@@ -22,6 +22,7 @@ namespace Autentication
 
         private void InitializePlayGamesLogin()
         {
+            #if UNITY_ANDROID
             var config = new PlayGamesClientConfiguration.Builder()
                 // Requests an ID token be generated.  
                 // This OAuth token can be used to
@@ -32,6 +33,7 @@ namespace Autentication
             PlayGamesPlatform.InitializeInstance(config);
             PlayGamesPlatform.DebugLogEnabled = true;
             PlayGamesPlatform.Activate();
+#endif
         }
 
         public void LoginGoogle()
@@ -42,6 +44,7 @@ namespace Autentication
 
         async void OnGoogleLogin(bool success)
         {
+#if UNITY_ANDROID
             if (success)
             {
                 // Call Unity Authentication SDK to sign in or link with Google.
@@ -56,6 +59,7 @@ namespace Autentication
                 testResultLogin.text = "Unsuccessful login";
                 //Debug.Log("Unsuccessful login");
             }
+#endif
         }
         
         async Task SignInWithGoogleAsync(string idToken)

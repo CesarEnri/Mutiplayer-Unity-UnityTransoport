@@ -1,9 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using Networking.Friends;
+using Unity.Services.Samples.Friends;
+using Unity.Services.Samples.Friends.UGUI;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace Unity.Services.Samples.Friends.UGUI
-{
+
     public class FriendsViewUGUI : ListViewUGUI, IFriendsListView
     {
         [SerializeField] RectTransform m_ParentTransform = null;
@@ -15,6 +19,8 @@ namespace Unity.Services.Samples.Friends.UGUI
         public Action<string> onRemove { get; set; }
         public Action<string> onBlock { get; set; }
 
+        public Action<string> OnInvite { get; set; }
+
         public void BindList(List<FriendsEntryData> friendEntryDatas)
         {
             m_FriendsEntryDatas = friendEntryDatas;
@@ -25,10 +31,11 @@ namespace Unity.Services.Samples.Friends.UGUI
             m_FriendEntries.ForEach(entry => Destroy(entry.gameObject));
             m_FriendEntries.Clear();
 
+            
             foreach (var friendsEntryData in m_FriendsEntryDatas)
             {
                 var entry = Instantiate(m_FriendEntryViewPrefab, m_ParentTransform);
-                entry.Init(friendsEntryData.Name, friendsEntryData.Availability, friendsEntryData.Activity);
+                entry.Init(friendsEntryData.Name, friendsEntryData.Id,  friendsEntryData.Availability, friendsEntryData.Activity);
                 entry.removeFriendButton.onClick.AddListener(() =>
                 {
                     onRemove?.Invoke(friendsEntryData.Id);
@@ -39,8 +46,31 @@ namespace Unity.Services.Samples.Friends.UGUI
                     onBlock?.Invoke(friendsEntryData.Id);
                     entry.gameObject.SetActive(false);
                 });
+                entry.invitePlayerToParty.onClick.AddListener(() => 
+                {
+                    //StartCoroutine(DisableButtonInvite(()));
+                    OnInvite?.Invoke(friendsEntryData.Id);
+                });
                 m_FriendEntries.Add(entry);
             }
         }
+
+
+        private void Start()
+        {
+            OnInvite += SendInvitation;
+        }
+
+        private void SendInvitation(string userId)
+        {
+            //StartCoroutine(DisableButtonInvite());
+            InviteFriendToMyLobby.Instance.CreateInvitation(userId);
+        }
+
+        IEnumerator DisableButtonInvite(Button gameObject)
+        {
+            //gameObject.SetActive(false);
+            yield return new WaitForSeconds(4f);
+            //gameObject.SetActive(true);
+        }
     }
-}

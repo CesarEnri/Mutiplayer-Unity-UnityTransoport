@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
+using Unity.Burst;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
 
 namespace Networking.Client
 {
+    [BurstCompile]
     public static class AuthenticationWrapper
     {
         public static AuthState AuthState { get; private set; } = AuthState.NotAuthenticated;
